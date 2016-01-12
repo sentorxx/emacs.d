@@ -1,0 +1,542 @@
+#+TITLE: sentor's emacs config
+* sentor's Emacs config
+** personal information
+   #+BEGIN_SRC emacs-lisp
+     (setq user-full-name "Torsten Senf"
+   	user-mail-address "sentor@sentor.de"
+   	user-login-name "sentor")
+
+   #+END_SRC
+
+** emacs initialization
+*** packages
+
+    
+    #+BEGIN_SRC emacs-lisp
+    (require 'package) 
+    ;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+    (package-initialize)
+    #+END_SRC
+
+    #+RESULTS:
+
+    Use =M-x package-refresh-contents= to reload the list of packages after adding these for the first time.
+
+** general configuration
+   *Shorten yes/no*
+   #+BEGIN_SRC emacs-lisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+   *No* startup screen
+   #+BEGIN_SRC emacs-lisp
+     (setq inhibit-startup-message t)
+   #+END_SRC
+
+   *No* -bar-modes in the windows system
+   #+BEGIN_SRC emacs-lisp
+     (when window-system
+       (tooltip-mode -1)
+       (tool-bar-mode -1)
+       (menu-bar-mode -1)
+       (scroll-bar-mode -1))
+   #+END_SRC
+
+   *Enable word-wrap*
+   #+BEGIN_SRC emacs-lisp
+   (global-visual-line-mode 1)
+   #+END_SRC
+
+   *Show columns in modline*
+   #+BEGIN_SRC emacs-lisp
+   (column-number-mode t)
+   #+END_SRC
+
+   *Auto revert all buffers* 
+   #+BEGIN_SRC emacs-lisp
+   (setq global-auto-revert-mode t)
+   #+END_SRC
+   
+   *my way to window moving:  using meta + cursor keys*
+   #+BEGIN_SRC emacs-lisp
+   (require 'windmove)
+   ; super key is the window key
+   (windmove-default-keybindings 'super)
+   #+END_SRC
+
+   *show more name in status bar if buffers are equal* ships with emacs
+   #+BEGIN_SRC emacs-lisp
+     (require 'uniquify)
+     (setq uniquify-buffer-name-style 'forward)
+   #+END_SRC
+
+** color theme and colors
+   i prefer moe-theme at the moment which comes from melpa
+   zenburn or solarized-dark are also nice and used for a long time
+   source: https://github.com/bbatsov/zenburn-emacs
+   #+BEGIN_SRC emacs-lisp
+     (require 'moe-theme)
+     (load-theme 'moe-dark t)
+   #+END_SRC
+
+   some custom faces
+   #+BEGIN_SRC emacs-lisp
+     (when window-system
+       (custom-set-faces
+        '(helm-selection ((t (:background "ForestGreen" :foreground "black"))))))
+      #+END_SRC
+
+** backups
+  #+begin_src emacs-lisp
+    (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+    (setq delete-old-versions -1)
+    (setq version-control t)
+    (setq vc-make-backup-files t)
+    (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+  #+end_src
+
+** dired / dired+
+   Show the verbose listing in dired mode by default
+   don't use nil :)
+   I wan't the less verbose output to jump quicker ....
+   #+BEGIN_SRC emacs-lisp
+     ;;(setq diredp-hide-details-initially-flag nil)
+   #+END_SRC
+   
+   *Auto revert dired* 
+   doesn't work in any case http://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Reverting-Dired.html#Auto-Reverting-Dired
+   #+BEGIN_SRC emacs-lisp
+   (setq dired-auto-revert-buffer t)
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (require 'dired+)
+
+     ;; ;; sorting directories first
+     ;; ;; C-u s let you change the switches on minibuffer
+     (setq dired-listing-switches "-aBhl  --group-directories-first")
+
+     ;; ;; run shell programs on ! in dired mode
+     (require 'dired-x)
+     ;; ;; open csr with openssl ...
+     (setq dired-guess-shell-alist-user
+         '(("\\.csr\\'" "openssl req -text -in")
+              ("\\.pem\\'" "openssl x509 -text ingerprint -in")
+              ("\\.crt\\'" "openssl x509 -text ingerprint -in")
+   	   ("\\.mp4\\'" "vlc &")))
+
+   #+END_SRC
+
+** Which Key a successor of Guide Key
+   http://ericjmritz.name/2015/09/15/recent-emacs-packages-as-of-september-2015/
+   #+BEGIN_SRC emacs-lisp
+     (require 'which-key)
+     (which-key-mode)
+     ;; show the keys on the right side like guide keys
+     (which-key-setup-side-window-right)
+     (setq which-key-idle-delay 0.6)
+
+   #+END_SRC
+
+   #+RESULTS:
+   : 0.6
+
+** hydra's
+   abo-abo hydra's
+   https://github.com/abo-abo/hydra
+   my first hydra adjust window size bound to a key-chord
+   press `ws' simultaneous
+   #+BEGIN_SRC emacs-lisp
+   (key-chord-define-global
+      "ws"
+      (defhydra hydra-window-size ()
+        "change window-size"
+        ("h" enlarge-window-horizontally "enlarge horizontal ꜛ")
+        ;; left beside h is g which makes smaller
+        ("g" shrink-window-horizontally "shrink horizontal ꜜ")
+        ("v" enlarge-window "enlarge vertical ")
+        ;; left beside v is c which makes smalles
+        ("c" shrink-window "shrink vertical ")))
+        ;;(key-chord-define-global "ww" 'hydra-window-size/body)
+   #+END_SRC
+
+   #+RESULTS:
+   : hydra-window-size/body
+
+
+   jump / search into buffers with my favorite functions
+   #+BEGIN_SRC emacs-lisp
+     (key-chord-define-global
+      "jj"
+      (defhydra hydra-jump-into-buffer (:color blue)
+        "jump-arround"
+        ("c" avy-goto-char "goto-char")
+	("b" avy-goto-word-1 "goto-word-1")
+        ("w" ace-window "jump to window")
+        ("s" helm-swoop "helm-swoop")
+	("h" helm-org-in-buffer-headings "helm-org-in-buffer-headings")
+        ("l" avy-goto-line "goto-line")))
+   #+END_SRC
+
+   #+RESULTS:
+   : hydra-jump-into-buffer/body
+
+   problem's mc/edit-lines with helm-M-x
+   https://github.com/magnars/multiple-cursors.el/issues/151
+   so find a propper key or a hydra yeah
+
+   #+BEGIN_SRC emacs-lisp
+     (key-chord-define-global
+      "mc"
+      (defhydra hydra-multiple-cursors (:hint nil)
+        "
+            ^Up^            ^Down^        ^Other^
+       ----------------------------------------------
+       [_p_]   Next    [_n_]   Next    [_l_] Edit lines
+       [_P_]   Skip    [_N_]   Skip    [_b_] Edit beginning of lines
+       [_M-p_] Unmark  [_M-n_] Unmark  [_e_] Edit beginning of lines
+       ^ ^             ^ ^             [_a_] Mark all
+       ^ ^             ^ ^             [_r_] Mark by regexp
+       ^ ^             ^ ^	       [_q_] Quit
+       "
+        ("l" mc/edit-lines)
+	("b" mc/edit-beginnings-of-lines)
+	("e" mc/edit-ends-of-lines)
+        ("a" mc/mark-all-like-this)
+        ("n" mc/mark-next-like-this)
+        ("N" mc/skip-to-next-like-this)
+        ("M-n" mc/unmark-next-like-this)
+        ("p" mc/mark-previous-like-this)
+        ("P" mc/skip-to-previous-like-this)
+        ("M-p" mc/unmark-previous-like-this)
+        ("r" mc/mark-all-in-region-regexp)
+        ("q" nil)))
+   #+END_SRC
+
+   #+RESULTS:
+   : multiple-cursors-hydra/body
+
+   do mail functions via my emacs mailer mu4e
+#+BEGIN_SRC emacs-lisp
+  (key-chord-define-global
+   "dm"
+   (defhydra hydra-do-mail (:color blue)
+     "make-mail"
+     ("c" mu4e-compose-new "compose mail")
+     ("j" mu4e~headers-jump-to-maildir "jump mail dir")
+     ("s" helm-mu "search mail")))
+#+END_SRC
+
+#+RESULTS:
+: hydra-do-mail/body
+
+** fonts  / scaling
+*** special char font
+    Show special chars etc. C-x 8 RET => `CRYING CAT FACE' 😿 with a special font.
+    Very cool and seen here => http://irreal.org/blog/?p=2832 ... but doesn't work in current emacs 
+    #+BEGIN_SRC emacs-lisp
+      ;; (set-fontset-font "fontset-default" nil
+      ;;                   ;;(font-spec :size 30 :name "DejaVu Sans Mono"))
+      ;; 		  (font-spec :size 30 :name "Symbola"))
+    #+END_SRC
+
+    #+RESULTS:
+
+
+*** scaling
+    #+BEGIN_SRC emacs-lisp
+    (global-set-key (kbd "C-+") 'text-scale-increase)
+    (global-set-key (kbd "C--") 'text-scale-decrease)
+    (global-set-key (kbd "C-0") 'text-scale-adjust)
+    #+END_SRC
+
+** server
+   Use emacs as a server to connect with emacsclient ...
+   #+BEGIN_SRC emacs-lisp
+   (server-start)
+   #+END_SRC
+
+** magit
+   Using git from within emacs
+
+   Don't highlight the region in magit diff view
+   #+BEGIN_SRC emacs-lisp
+     (custom-set-variables
+      '(magit-item-highlight-face nil)
+      '(magit-diff-use-overlays nil)
+      '(magit-use-overlays nil)
+      )
+   #+END_SRC
+
+   Use 'F5' for git status
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "<f5>")  'magit-status)
+   #+END_SRC
+
+** undo tree
+   Replace emacs undo handling with undo tree. Undo tree is an package from melpa.
+
+   #+BEGIN_SRC emacs-lisp
+     (global-undo-tree-mode)
+     (setq undo-tree-visualizer-timestamps t)
+     (setq undo-tree-visualizer-diff t)
+      #+END_SRC
+
+** smart mode line
+   Find by Sacha
+   #+BEGIN_SRC emacs-lisp
+     ;; no confirmation is needed for theme which load lisp
+     (setq sml/no-confirm-load-theme t)
+     (sml/setup)
+     (sml/apply-theme 'dark)
+   #+END_SRC
+
+** my functions
+   insert date / time string
+   #+BEGIN_SRC emacs-lisp
+     (defun sentor/insert-date ()
+       (interactive)
+       (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
+   #+END_SRC
+
+** twitter
+   using twittering-mode
+   first of all get pin via oauth use `twit'
+   https://github.com/hayamiz/twittering-mode
+   #+BEGIN_SRC emacs-lisp
+   (setq twittering-icon-mode t)
+   ;; keep icons in a local storage
+   ;; ~/.twittering-mode-icons.gz, which can be changed by the variable twittering-icon-storage-file.
+   (setq twittering-use-icon-storage t)
+   ;; number of tweets
+   (setq twittering-number-of-tweets-on-retrieval 100)
+   (setq twittering-status-format
+   "%FOLD{%RT{%FACE[bold]{RT}}%i%S%FACE[italic]{ %r @%C{%Y-%m-%d %H:%M:%S} %@{} via: %f\n}%FOLD[ ]{%T%RT{\nretweeted by %i %S (%FIELD-IF-NONZERO{retweet_count} retweets) }}}\n")
+   ;; found here
+   ;; http://doc.rix.si/org/fsem.html#sec-12
+   (add-hook 'twittering-edit-mode-hook 'turn-on-flyspell)
+   ;; fetch not so often
+   (setq twittering-timer-interval 120)
+   ;; should visible / show tweet to reply use "r"
+   (setq twittering-use-master-password t)
+   ;; resize images default 48px which is to nmuch 
+   (setq twittering-convert-fix-size 24)
+   #+END_SRC
+
+   #+RESULTS:
+   : t
+
+** key-chord
+   to work, press different two characters simultaneous or the same twice
+   key-chords are used in hydra
+   #+BEGIN_SRC emacs-lisp
+   (setq key-chord-one-key-delay 0.2)
+   (key-chord-mode 1)
+   #+END_SRC
+
+   #+RESULTS:
+   : Key Chord mode on
+
+** avy
+   abo-abo avy ... quick jump to visible elements
+   see hydra's
+
+** rainbow delimiters
+   Enable rainbox delimiters
+   #+BEGIN_SRC emacs-lisp
+   (require 'rainbow-delimiters)
+   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+   #+END_SRC
+
+   #+RESULTS:
+   : t
+
+** multiple cursors
+   used in hydra's see there 
+
+   #+RESULTS:
+   : mc/mark-all-like-this
+
+** org-mode
+   Some often use shortcuts
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key "\C-cl" 'org-store-link)
+      (global-set-key "\C-ca" 'org-agenda)
+      (global-set-key "\C-cb" 'org-iswitchb)
+    #+END_SRC
+
+*** Exportes
+
+    #+BEGIN_SRC emacs-lisp
+     (require 'ox-html)
+     (require 'ox-latex)
+     (require 'ox-beamer)
+     (require 'ox-odt)
+     (require 'ox-org)
+    #+END_SRC
+
+*** Babel Code Block Stuff
+
+    don't ask for code evaluation
+    #+BEGIN_SRC emacs-lisp
+    (setq org-confirm-babel-evaluate nil)
+    #+END_SRC
+
+    Colorize the code in the blocks
+    #+BEGIN_SRC emacs-lisp
+    (setq org-src-fontify-natively t)
+    #+END_SRC
+
+    execute code blocks into org-mode and get the result into the buffer pretty cool
+    http://emacs-fu.blogspot.de/2011/02/executable-source-code-blocks-with-org.html
+    #+BEGIN_SRC emacs-lisp
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '( (perl . t)
+          (ruby . t)
+          (sh . t)
+          (python . t)
+          (emacs-lisp . t)
+          (ditaa . t)
+          ))
+    #+END_SRC
+
+    colorize ascii art with ditaa
+    http://ditaa.sourceforge.net/
+    #+BEGIN_SRC emacs-lisp
+    (setq org-ditaa-jar-path "~/.emacs.d/DitaaEps/DitaaEps.jar")
+    #+END_SRC
+
+    make some special modes in picture / artist mode to better edit ascii art graphics
+    the ruler-mode will be overwrite with other stuff; acticvate that later
+
+    #+BEGIN_SRC emacs-lisp
+    (setq picture-mode-hook (quote (linum-mode hl-line-mode ruler-mode)))
+    #+END_SRC
+
+*** Folded content
+    sign which indicates that content is under the heading or in code blocks
+    http://endlessparentheses.com/changing-the-org-mode-ellipsis.html
+    #+BEGIN_SRC emacs-lisp
+    (setq org-ellipsis "⤵")
+    #+END_SRC
+
+*** Capture
+    #+BEGIN_SRC emacs-lisp
+      (define-key global-map "\C-cc" 'org-capture)
+      (setq org-capture-templates
+    	'(
+              ("t" "Todo" entry (file+headline "~/documents/own/private_gtd.org" "Tasks")
+               "** TODO %? date: %U\n %i\n")))
+    #+END_SRC
+
+** browser settings
+   set the default browser
+   #+BEGIN_SRC emacs-lisp
+     (setq browse-url-browser-function 'browse-url-generic
+   	browse-url-generic-program "google-chrome")
+   #+END_SRC
+
+** aspell
+   #+BEGIN_SRC emacs-lisp
+   (setq ispell-program-name "/usr/bin/aspell")
+   (setq ispell-list-command "list")
+   (setq-default ispell-extra-args '("--encoding=UTF-8"))
+   #+END_SRC
+
+** calendar
+   Start the week with monday
+   #+BEGIN_SRC emacs-lisp
+   (setq calendar-week-start-day 1)
+   #+END_SRC
+
+** mu4e - my mailer inside emacs
+   use a separate file for my mu4e mail config 
+   defined in =init.el=
+   #+INCLUDE: "~/.emacs.d/mu4e_config.org"
+** rfc mode 
+   *reading rfc*
+   #+BEGIN_SRC emacs-lisp
+   (require 'irfc)
+   (setq irfc-assoc-mode t)
+   #+END_SRC
+
+** kill ring 
+   #+BEGIN_SRC emacs-lisp
+  (require 'browse-kill-ring)
+  (global-set-key "\C-cy" 'browse-kill-ring)
+   #+END_SRC
+
+** helm 
+   #+BEGIN_SRC emacs-lisp
+     ;; https://tuhdo.github.io/helm-intro.html
+     (require 'helm)
+
+     ;; must set before helm-config,  otherwise helm use default
+     ;; prefix "C-x c", which is inconvenient because you can
+     ;; accidentially pressed "C-x C-c"
+     (setq helm-command-prefix-key "C-c h")
+
+     (require 'helm-config)
+     (require 'helm-eshell)
+     (require 'helm-files)
+     (require 'helm-grep)
+
+     ;; resize the helm buffer according to the matches
+     (helm-autoresize-mode 1)
+
+     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
+     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+     (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+     (define-key helm-grep-mode-map (kbd "<return>")  'helm-grep-mode-jump-other-window)
+     (define-key helm-grep-mode-map (kbd "n")  'helm-grep-mode-jump-other-window-forward)
+     (define-key helm-grep-mode-map (kbd "p")  'helm-grep-mode-jump-other-window-backward)
+
+     (setq
+      helm-google-suggest-use-curl-p t
+      helm-scroll-amount 4 ; scroll 4 lines other window using M-<next>/M-<prior>
+      helm-quick-update t ; do not display invisible candidates
+      helm-idle-delay 0.01 ; be idle for this many seconds, before updating in delayed sources.
+      helm-input-idle-delay 0.01 ; be idle for this many seconds, before updating candidate buffer
+      helm-ff-search-library-in-sexp t ; search for library in `require' and `declare-function' sexp.
+
+      helm-split-window-default-side 'other ;; open helm buffer in another window
+      helm-split-window-in-side-p t ;; open helm buffer inside current window, not occupy whole other window
+      helm-buffers-favorite-modes (append helm-buffers-favorite-modes
+       				       '(picture-mode artist-mode))
+      helm-candidate-number-limit 200 ; limit the number of displayed canidates
+      helm-M-x-requires-pattern 0     ; show all candidates when set to 0
+      helm-boring-file-regexp-list
+      '("\\.git$" "\\.hg$" "\\.svn$" "\\.CVS$" "\\._darcs$" "\\.la$" "\\.o$" "\\.i$") ; do not show these files in helm buffer
+      helm-ff-file-name-history-use-recentf t
+      helm-move-to-line-cycle-in-source t ; move to end or beginning of source
+                                             ; when reaching top or bottom of source.
+      ido-use-virtual-buffers t      ; Needed in helm-buffers-list
+      helm-buffers-fuzzy-matching t          ; fuzzy matching buffer names when non--nil
+                                             ; useful in helm-mini that lists buffers
+      )
+
+
+     ;; Save current position to mark ring when jumping to a different place
+     ;;(add-hook 'helm-goto-line-before-hook 'helm-save-current-pos-to-mark-ring)
+
+     (global-set-key (kbd "C-x C-f") 'helm-find-files)
+     ;; prefixes in helm M-x has to be inserted AFTER M-xhttp://tuhdo.github.io/helm-intro.html
+     (global-set-key (kbd "M-x") 'helm-M-x)
+     (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+     (global-set-key (kbd "C-x b") 'helm-mini)
+     (global-set-key (kbd "C-x rb") 'helm-bookmarks)
+
+
+     ;(setq enable-recursive-minibuffers t)
+     (helm-mode 1)
+
+   #+END_SRC
+
+   #+RESULTS:
+   : t
+
+
+
