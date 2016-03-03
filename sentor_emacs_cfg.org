@@ -369,12 +369,61 @@
 *** Exportes
 
     #+BEGIN_SRC emacs-lisp
-     (require 'ox-html)
-     (require 'ox-latex)
-     (require 'ox-beamer)
-     (require 'ox-odt)
-     (require 'ox-org)
+      ;; use also exporter in the contrib directory
+      (add-to-list 'load-path "/home/sentor/download/org-mode/contrib/lisp")
+      (require 'ox-html)
+      (require 'ox-latex)
+      (require 'ox-beamer)
+      (require 'ox-odt)
+      (require 'ox-org)
+      (require 'ox-koma-letter)
     #+END_SRC
+
+    #+RESULTS:
+    : ox-koma-letter
+    
+    Use the awesome *scrartl class*. I like this class more than the standard article class.
+    use this latex class with: =#+LaTeX_CLASS: koma-article=
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'org-latex-classes
+    	       '("koma-article"
+    		 "\\documentclass{scrartcl}"
+    		 ("\\section{%s}" . "\\section*{%s}")
+    		 ("\\subsection{%s}" . "\\subsection*{%s}")
+    		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+    		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+    		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    #+END_SRC
+
+    #+RESULTS:
+    | koma-article        | \documentclass{scrartcl}             | (\usepackage[ngerman}{babel})  | (\section{%s} . \section*{%s})       | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s}) |
+    | koma-article        | \documentclass{scrartcl}             | \usepackage[ngerman}{babel}    | (\section{%s} . \section*{%s})       | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s}) |
+    | koma-article        | \documentclass{scrartcl}             | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s})   |                                          |
+    | default-koma-letter | \documentclass[11pt]{scrlttr2}       |                                |                                      |                                            |                                            |                                            |                                          |
+    | beamer              | \documentclass[presentation]{beamer} | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) |                                            |                                            |                                          |
+    | article             | \documentclass[11pt]{article}        | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s})   |                                          |
+    | report              | \documentclass[11pt]{report}         | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
+    | book                | \documentclass[11pt]{book}           | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
+
+    Test =xelatex= as latex compiler. 
+    Install package =texlive-xetex= on debian. 
+    #+BEGIN_SRC emacs-lisp
+      (setq org-latex-compiler "xelatex")
+    #+END_SRC
+
+    #+RESULTS:
+    : xelatex
+
+    #+BEGIN_SRC emacs-lisp
+      (setq org-latex-packages-alist
+        ;; xltxtra will load fontspec + xunicode e.g. for german umlauts 
+        '(("" "xltxtra" t)))
+    #+END_SRC
+
+    #+RESULTS:
+    |             | xltxtra      | t |
+    | Latin,Greek | ucharclasses | t |
+
 
 *** Babel Code Block Stuff
 
