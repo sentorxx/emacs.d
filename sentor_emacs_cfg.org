@@ -431,6 +431,67 @@
                "** TODO %? date: %U\n %i\n")))
     #+END_SRC
 
+*** Publishing 
+    publish my own org-files 
+    
+    export htnl as html5 
+    #+BEGIN_SRC emacs-lisp
+     (setq org-html-doctype "html5")
+    #+END_SRC
+
+    #+RESULTS:
+    : html5
+
+    #+BEGIN_SRC emacs-lisp
+      (setq org-publish-project-alist
+        '(("myweb"
+           :base-directory "/home/sentor/documents/own/blog/export/base/"
+           :base-extension "org"
+           :publishing-directory "/home/sentor/documents/own/blog/export/html/pages/"
+           :publishing-function org-html-publish-to-html
+           :exclude "foo.org"   ;; regexp
+           :headline-levels 3
+           :section-numbers nil
+           :with-toc nil
+           :html-head "<link rel=\"stylesheet\"
+                         href=\"../other/org.css\" type=\"text/css\"/>"
+           :html-preamble "
+       <div id=\"menu\">
+          <p>
+          <a href=\"index.html\" >Home</a> |
+          <a href=\"page2.html\" >Page 2</a> |
+          <a href=\"page3.html\" >Page 3</a> |
+          <a href=\"page4.html\" >Page 4</a>
+          </p>
+         </div>
+      "
+           :html-postamble "
+      postamble by me
+      "
+           )
+
+          ("images"
+           :base-directory "/home/sentor/documents/own/blog/export/images/"
+           :base-extension "jpg\\|gif\\|png"
+           :publishing-directory "/home/sentor/documents/own/blog/export/html/images/"
+           :publishing-function org-publish-attachment)
+
+          ("other"
+           :base-directory "/home/sentor/documents/own/blog/export/other/"
+           :base-extension "css\\|el"
+           :publishing-directory "//home/sentor/documents/own/blog/export/html/other/"
+           :publishing-function org-publish-attachment)
+          ("website" :components ("orgfiles" "images" "other"))))
+    #+END_SRC
+
+    #+RESULTS:
+    | myweb | :base-directory | /home/sentor/documents/own/blog/export/base/ | :base-extension | org | :publishing-directory | /home/sentor/documents/own/blog/export/html/pages/ | :publishing-function | org-html-publish-to-html | :exclude | foo.org | :headline-levels | 3 | :section-numbers | nil | :with-toc | nil | :html-head | <link rel="stylesheet" |
+
+*** Agenda
+    needed for creating ics files with hours e.g. <2016-03-19 Sa 14:00>--<2016-03-19 Sa 23:00>
+    #+BEGIN_SRC emacs-lisp
+    (setq org-agenda-default-appointment-duration 60)
+    #+END_SRC
 ** browser settings
    set the default browser
    #+BEGIN_SRC emacs-lisp
