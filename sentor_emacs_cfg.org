@@ -1,5 +1,5 @@
-#+TITLE: sentor's emacs config
 * sentor's Emacs config
+Writing the emacs configuration in org-mode I have first seen from [[http://sachachua.com/][Sacha Chua]]. Here is her awesome config https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org.
 ** personal information
    #+BEGIN_SRC emacs-lisp
      (setq user-full-name "Torsten Senf"
@@ -19,9 +19,13 @@
     (package-initialize)
     #+END_SRC
 
-    #+RESULTS:
+    Use =M-x package-refresh-contents= to reload the list of packages after adding these for the first time. Use the variable =package-activated-list= =C-h v package-activated-list= to see all installed packages at the moment. 
+    #+BEGIN_EXAMPLE
+      package-activated-list is a variable defined in ‘package.el’.
+      Its value is
+      (ace-window avy bbdb browse-kill-ring color-theme-solarized color-theme dired+ helm-descbinds helm-mu helm-swoop helm helm-core htmlize irfc key-chord magit git-commit magit-popup moe-theme multiple-cursors paradox hydra pdf-tools rainbow-delimiters smart-mode-line rich-minority solarized-theme spinner tablist twittering-mode undo-tree which-key with-editor dash async zenburn-theme)
 
-    Use =M-x package-refresh-contents= to reload the list of packages after adding these for the first time.
+    #+END_EXAMPLE
 
 ** general configuration
    *Shorten yes/no*
@@ -70,6 +74,7 @@
      (require 'uniquify)
      (setq uniquify-buffer-name-style 'forward)
    #+END_SRC
+
 
 ** color theme and colors
    i prefer moe-theme at the moment which comes from melpa
@@ -242,7 +247,6 @@
     #+END_SRC
 
     #+RESULTS:
-
 
 *** scaling
     #+BEGIN_SRC emacs-lisp
@@ -432,7 +436,7 @@
     (setq org-confirm-babel-evaluate nil)
     #+END_SRC
 
-    Colorize the code in the blocks
+    Colorize the code in the src code blocks
     #+BEGIN_SRC emacs-lisp
     (setq org-src-fontify-natively t)
     #+END_SRC
@@ -645,8 +649,6 @@
 
    #+END_SRC
 
-   #+RESULTS:
-   : t
 
 
 
