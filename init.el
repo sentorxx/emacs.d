@@ -1,5 +1,4 @@
 ;; load emacs config file as org-mode file 
-;; where org mode is installing it's files
 (require 'package)
 (package-initialize)
 
@@ -10,6 +9,7 @@
 ;; own file for custom variables, so this variables can be loaded first which is the right way  
 (setq custom-file "~/.emacs.d/custom_variables.el")
 (load custom-file 'noerror)
+(setq vc-follow-symlinks t)
 (org-babel-load-file "~/.emacs.d/sentor_emacs_cfg.org")
 (org-babel-load-file "~/.emacs.d/mu4e_config.org")
 
