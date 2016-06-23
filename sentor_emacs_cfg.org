@@ -1,5 +1,5 @@
 * sentor's Emacs config
-Writing the emacs configuration in org-mode I have first seen from [[http://sachachua.com/][Sacha Chua]]. Here is her awesome config https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org.
+  Writing the emacs configuration in org-mode I have first seen from [[http://sachachua.com/][Sacha Chua]]. Here is her awesome config https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org.
 ** personal information
    #+BEGIN_SRC emacs-lisp
      (setq user-full-name "Torsten Senf"
@@ -75,14 +75,14 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
      (setq uniquify-buffer-name-style 'forward)
    #+END_SRC
 
-
 ** color theme and colors
    i prefer moe-theme at the moment which comes from melpa
    zenburn or solarized-dark are also nice and used for a long time
    source: https://github.com/bbatsov/zenburn-emacs
    #+BEGIN_SRC emacs-lisp
-     (require 'moe-theme)
-     (load-theme 'moe-dark t)
+     ;; (require 'moe-theme)
+     ;; (load-theme 'moe-dark t)
+     (load-theme 'sanityinc-tomorrow-night t)
    #+END_SRC
 
    some custom faces
@@ -127,12 +127,13 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
      ;; ;; open csr with openssl ...
      (setq dired-guess-shell-alist-user
          '(("\\.csr\\'" "openssl req -text -in")
-              ("\\.pem\\'" "openssl x509 -text ingerprint -in")
-              ("\\.crt\\'" "openssl x509 -text ingerprint -in")
+              ("\\.pem\\'" "openssl x509 -text -fingerprint -in")
+              ("\\.crt\\'" "openssl x509 -text -fingerprint -in")
    	   ("\\.mp4\\'" "vlc &")))
 
    #+END_SRC
 
+  
 ** Which Key a successor of Guide Key
    http://ericjmritz.name/2015/09/15/recent-emacs-packages-as-of-september-2015/
    #+BEGIN_SRC emacs-lisp
@@ -143,9 +144,6 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
      (setq which-key-idle-delay 0.6)
 
    #+END_SRC
-
-   #+RESULTS:
-   : 0.6
 
 ** hydra's
    abo-abo hydra's
@@ -166,10 +164,6 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
         ;;(key-chord-define-global "ww" 'hydra-window-size/body)
    #+END_SRC
 
-   #+RESULTS:
-   : hydra-window-size/body
-
-
    jump / search into buffers with my favorite functions
    #+BEGIN_SRC emacs-lisp
      (key-chord-define-global
@@ -180,12 +174,9 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
 	("b" avy-goto-word-1 "goto-word-1")
         ("w" ace-window "jump to window")
         ("s" helm-swoop "helm-swoop")
-	("h" helm-org-in-buffer-headings "helm-org-in-buffer-headings")
+	("r" helm-org-rifle "helm-org-rifle")
         ("l" avy-goto-line "goto-line")))
    #+END_SRC
-
-   #+RESULTS:
-   : hydra-jump-into-buffer/body
 
    problem's mc/edit-lines with helm-M-x
    https://github.com/magnars/multiple-cursors.el/issues/151
@@ -219,9 +210,6 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
         ("q" nil)))
    #+END_SRC
 
-   #+RESULTS:
-   : multiple-cursors-hydra/body
-
    do mail functions via my emacs mailer mu4e
 #+BEGIN_SRC emacs-lisp
   (key-chord-define-global
@@ -233,20 +221,16 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
      ("s" helm-mu "search mail")))
 #+END_SRC
 
-#+RESULTS:
-: hydra-do-mail/body
-
 ** fonts  / scaling
 *** special char font
     Show special chars etc. C-x 8 RET => `CRYING CAT FACE' 😿 with a special font.
     Very cool and seen here => http://irreal.org/blog/?p=2832 ... but doesn't work in current emacs 
     #+BEGIN_SRC emacs-lisp
-      ;; (set-fontset-font "fontset-default" nil
-      ;;                   ;;(font-spec :size 30 :name "DejaVu Sans Mono"))
-      ;; 		  (font-spec :size 30 :name "Symbola"))
+      (set-fontset-font "fontset-default" nil
+    		    ;;(font-spec :size 30 :name "DejaVu Sans Mono"))
+    		    ;;(font-spec :size 30 :name "Symbola"))
+		    (font-spec :size 30 :name "Unifont"))
     #+END_SRC
-
-    #+RESULTS:
 
 *** scaling
     #+BEGIN_SRC emacs-lisp
@@ -328,8 +312,6 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
    (setq twittering-convert-fix-size 24)
    #+END_SRC
 
-   #+RESULTS:
-   : t
 
 ** key-chord
    to work, press different two characters simultaneous or the same twice
@@ -338,9 +320,6 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
    (setq key-chord-one-key-delay 0.2)
    (key-chord-mode 1)
    #+END_SRC
-
-   #+RESULTS:
-   : Key Chord mode on
 
 ** avy
    abo-abo avy ... quick jump to visible elements
@@ -353,22 +332,23 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
    #+END_SRC
 
-   #+RESULTS:
-   : t
-
 ** multiple cursors
    used in hydra's see there 
 
-   #+RESULTS:
-   : mc/mark-all-like-this
-
 ** org-mode
-   Some often use shortcuts
+*** Basics
+    hide emphasis-markers e.g. see /foo bar/ as italic
     #+BEGIN_SRC emacs-lisp
-      (global-set-key "\C-cl" 'org-store-link)
-      (global-set-key "\C-ca" 'org-agenda)
-      (global-set-key "\C-cb" 'org-iswitchb)
+    (setq org-hide-emphasis-markers t)
     #+END_SRC
+
+*** Shortcuts
+    Some often use shortcuts
+     #+BEGIN_SRC emacs-lisp
+       (global-set-key "\C-cl" 'org-store-link)
+       (global-set-key "\C-ca" 'org-agenda)
+       (global-set-key "\C-cb" 'org-iswitchb)
+     #+END_SRC
 
 *** Exportes
 
@@ -383,9 +363,6 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
       (require 'ox-koma-letter)
     #+END_SRC
 
-    #+RESULTS:
-    : ox-koma-letter
-    
     Use the awesome *scrartl class*. I like this class more than the standard article class.
     use this latex class with: =#+LaTeX_CLASS: koma-article=
     #+BEGIN_SRC emacs-lisp
@@ -399,35 +376,17 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
     		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     #+END_SRC
 
-    #+RESULTS:
-    | koma-article        | \documentclass{scrartcl}             | (\usepackage[ngerman}{babel})  | (\section{%s} . \section*{%s})       | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s}) |
-    | koma-article        | \documentclass{scrartcl}             | \usepackage[ngerman}{babel}    | (\section{%s} . \section*{%s})       | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s}) |
-    | koma-article        | \documentclass{scrartcl}             | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s})   |                                          |
-    | default-koma-letter | \documentclass[11pt]{scrlttr2}       |                                |                                      |                                            |                                            |                                            |                                          |
-    | beamer              | \documentclass[presentation]{beamer} | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) |                                            |                                            |                                          |
-    | article             | \documentclass[11pt]{article}        | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s})   |                                          |
-    | report              | \documentclass[11pt]{report}         | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
-    | book                | \documentclass[11pt]{book}           | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
-
     Test =xelatex= as latex compiler. 
     Install package =texlive-xetex= on debian. 
     #+BEGIN_SRC emacs-lisp
       (setq org-latex-compiler "xelatex")
     #+END_SRC
 
-    #+RESULTS:
-    : xelatex
-
     #+BEGIN_SRC emacs-lisp
       (setq org-latex-packages-alist
         ;; xltxtra will load fontspec + xunicode e.g. for german umlauts 
         '(("" "xltxtra" t)))
     #+END_SRC
-
-    #+RESULTS:
-    |             | xltxtra      | t |
-    | Latin,Greek | ucharclasses | t |
-
 
 *** Babel Code Block Stuff
 
@@ -475,6 +434,12 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
     (setq org-ellipsis "⤵")
     #+END_SRC
 
+*** Bullets in front of headings
+    #+BEGIN_SRC emacs-lisp
+    (require 'org-bullets)
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+    #+END_SRC
+
 *** Capture
     #+BEGIN_SRC emacs-lisp
       (define-key global-map "\C-cc" 'org-capture)
@@ -491,9 +456,6 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
     #+BEGIN_SRC emacs-lisp
      (setq org-html-doctype "html5")
     #+END_SRC
-
-    #+RESULTS:
-    : html5
 
     #+BEGIN_SRC emacs-lisp
       (setq org-publish-project-alist
@@ -519,7 +481,7 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
          </div>
       "
            :html-postamble "
-      postamble by me
+       postamble by me
       "
            )
 
@@ -537,14 +499,12 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
           ("website" :components ("orgfiles" "images" "other"))))
     #+END_SRC
 
-    #+RESULTS:
-    | myweb | :base-directory | /home/sentor/documents/own/blog/export/base/ | :base-extension | org | :publishing-directory | /home/sentor/documents/own/blog/export/html/pages/ | :publishing-function | org-html-publish-to-html | :exclude | foo.org | :headline-levels | 3 | :section-numbers | nil | :with-toc | nil | :html-head | <link rel="stylesheet" |
-
 *** Agenda
     needed for creating ics files with hours e.g. <2016-03-19 Sa 14:00>--<2016-03-19 Sa 23:00>
     #+BEGIN_SRC emacs-lisp
     (setq org-agenda-default-appointment-duration 60)
     #+END_SRC
+
 ** browser settings
    set the default browser
    #+BEGIN_SRC emacs-lisp
@@ -649,6 +609,34 @@ Writing the emacs configuration in org-mode I have first seen from [[http://sach
 
    #+END_SRC
 
+** bbdb
+   got the sources from git://git.savannah.nongnu.org/bbdb.git; melpa files aren't working here 
+   
+   # support mu4e 
+   #+BEGIN_SRC shell
+   ./autogen.sh
+   ./configure --with-mu4e-dir=/path/to/mu4e
+   make
+   make install
+   #+END_SRC
+
+   
+
+   #+BEGIN_SRC emacs-lisp
+     (require 'bbdb-loaddefs)
+     ;; (setq bbdb-mail-user-agent (quote message-user-agent))
+     ;; (setq mu4e-view-mode-hook (quote (bbdb-mua-auto-update visual-line-mode)))
+     ;; (setq mu4e-compose-complete-addresses nil)
+     ;; (setq bbdb-mua-pop-up t)
+     ;; (setq bbdb-mua-pop-up-window-size 5)
+   #+END_SRC
+
+** weather with wttr.in
+   found here http://pragmaticemacs.com/emacs/weather-in-emacs/
+   #+BEGIN_SRC emacs-lisp
+   (require 'wttrin)
+   (setq wttrin-default-cities '("Kahla""Greuda""Jena"))
+   #+END_SRC
 
 
 
