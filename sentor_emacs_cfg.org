@@ -133,7 +133,6 @@
 
    #+END_SRC
 
-  
 ** Which Key a successor of Guide Key
    http://ericjmritz.name/2015/09/15/recent-emacs-packages-as-of-september-2015/
    #+BEGIN_SRC emacs-lisp
@@ -282,10 +281,19 @@
 
 ** my functions
    insert date / time string
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (defun sentor/insert-date ()
        (interactive)
        (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp :results silent
+     (defun sentor/copy-to-publishing-base-dir-and-publish ()
+     (interactive)
+     (setq my_pub_project "myweb")
+     (setq my_target (plist-get (cdr (assoc my_pub_project org-publish-project-alist)) ':base-directory))
+     (copy-file buffer-file-name my_target 1)
+     (org-publish-project my_pub_project))
    #+END_SRC
 
 ** twitter
@@ -311,7 +319,6 @@
    ;; resize images default 48px which is to nmuch 
    (setq twittering-convert-fix-size 24)
    #+END_SRC
-
 
 ** key-chord
    to work, press different two characters simultaneous or the same twice
@@ -451,53 +458,57 @@
 
 *** Publishing 
     publish my own org-files 
-    
-    export htnl as html5 
+
+    export html as html5 
     #+BEGIN_SRC emacs-lisp
      (setq org-html-doctype "html5")
     #+END_SRC
 
     #+BEGIN_SRC emacs-lisp
+      (setq org-export-html-postamble-format 
+    	'(("en" "<p class=\"postamble\">Last Updated %d %C. Created by %c</p>")))
+
       (setq org-publish-project-alist
-        '(("myweb"
-           :base-directory "/home/sentor/documents/own/blog/export/base/"
-           :base-extension "org"
-           :publishing-directory "/home/sentor/documents/own/blog/export/html/pages/"
-           :publishing-function org-html-publish-to-html
-           :exclude "foo.org"   ;; regexp
-           :headline-levels 3
-           :section-numbers nil
-           :with-toc nil
-           :html-head "<link rel=\"stylesheet\"
-                         href=\"../other/org.css\" type=\"text/css\"/>"
-           :html-preamble "
-       <div id=\"menu\">
-          <p>
-          <a href=\"index.html\" >Home</a> |
-          <a href=\"page2.html\" >Page 2</a> |
-          <a href=\"page3.html\" >Page 3</a> |
-          <a href=\"page4.html\" >Page 4</a>
-          </p>
-         </div>
-      "
-           :html-postamble "
-       postamble by me
-      "
-           )
+    	'(("myweb"
+    	   :base-directory "/home/sentor/documents/own/blog/export/base/"
+    	   :base-extension "org"
+    	   :publishing-directory "/home/sentor/documents/own/blog/export/html/pages/"
+    	   :publishing-function org-html-publish-to-html
+    	   :exclude "foo.org"   ;; regexp
+    	   :headline-levels 3
+    	   :section-numbers nil
+    	   :with-toc nil
+    	   :html-head "<link rel=\"stylesheet\"
+                           href=\"../other/org.css\" type=\"text/css\"/>"
+    	   :html-preamble "
+         <div id=\"menu\">
+    	<p>
+    	<a href=\"../../index.html\" >Home</a> |
+    	<a href=\"page2.html\" >Page 2</a> |
+    	<a href=\"page3.html\" >Page 3</a> |
+    	<a href=\"page4.html\" >Page 4</a>
+    	</p>
+           </div>
+        "
 
-          ("images"
-           :base-directory "/home/sentor/documents/own/blog/export/images/"
-           :base-extension "jpg\\|gif\\|png"
-           :publishing-directory "/home/sentor/documents/own/blog/export/html/images/"
-           :publishing-function org-publish-attachment)
+    	   )
 
-          ("other"
-           :base-directory "/home/sentor/documents/own/blog/export/other/"
-           :base-extension "css\\|el"
-           :publishing-directory "//home/sentor/documents/own/blog/export/html/other/"
-           :publishing-function org-publish-attachment)
-          ("website" :components ("orgfiles" "images" "other"))))
+    	  ("images"
+    	   :base-directory "/home/sentor/documents/own/blog/export/images/"
+    	   :base-extension "jpg\\|gif\\|png"
+    	   :publishing-directory "/home/sentor/documents/own/blog/export/html/images/"
+    	   :publishing-function org-publish-attachment)
+
+    	  ("other"
+    	   :base-directory "/home/sentor/documents/own/blog/export/other/"
+    	   :base-extension "css\\|el"
+    	   :publishing-directory "//home/sentor/documents/own/blog/export/html/other/"
+    	   :publishing-function org-publish-attachment)
+    	  ("website" :components ("orgfiles" "images" "other"))))
     #+END_SRC
+
+    #+RESULTS:
+    | myweb | :base-directory | /home/sentor/documents/own/blog/export/base/ | :base-extension | org | :publishing-directory | /home/sentor/documents/own/blog/export/html/pages/ | :publishing-function | org-html-publish-to-html | :exclude | foo.org | :headline-levels | 3 | :section-numbers | nil | :with-toc | nil | :html-head | <link rel="stylesheet" |
 
 *** Agenda
     needed for creating ics files with hours e.g. <2016-03-19 Sa 14:00>--<2016-03-19 Sa 23:00>
@@ -609,28 +620,6 @@
 
    #+END_SRC
 
-** bbdb
-   got the sources from git://git.savannah.nongnu.org/bbdb.git; melpa files aren't working here 
-   
-   # support mu4e 
-   #+BEGIN_SRC shell
-   ./autogen.sh
-   ./configure --with-mu4e-dir=/path/to/mu4e
-   make
-   make install
-   #+END_SRC
-
-   
-
-   #+BEGIN_SRC emacs-lisp
-     (require 'bbdb-loaddefs)
-     ;; (setq bbdb-mail-user-agent (quote message-user-agent))
-     ;; (setq mu4e-view-mode-hook (quote (bbdb-mua-auto-update visual-line-mode)))
-     ;; (setq mu4e-compose-complete-addresses nil)
-     ;; (setq bbdb-mua-pop-up t)
-     ;; (setq bbdb-mua-pop-up-window-size 5)
-   #+END_SRC
-
 ** weather with wttr.in
    found here http://pragmaticemacs.com/emacs/weather-in-emacs/
    #+BEGIN_SRC emacs-lisp
@@ -639,4 +628,19 @@
    #+END_SRC
 
 
+** music / mpg123
+   Play mp3 in emacs with an interface to mpg123 ... why not ;)
+   #+BEGIN_SRC emacs-lisp
+     (require 'mpg123)
+   #+END_SRC
+
+
+** bbdb 
+   get it from source and use it e.g. in mu4e 
+   https://www.emacswiki.org/emacs/UpgradeBBDB
+   #+BEGIN_SRC emacs-lisp :results silent 
+   (setq bbdb-offer-save 1) ;; 1 means save-without-asking
+   (setq bbdb-complete-mail-allow-cycling t)  ;; cycle through multiple mail addresses 
+   (setq bbdb-pop-up-window-size 10)  
+   #+END_SRC
 
