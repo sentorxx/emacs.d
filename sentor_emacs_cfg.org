@@ -1,45 +1,45 @@
 * sentor's Emacs config
   Writing the emacs configuration in org-mode I have first seen from [[http://sachachua.com/][Sacha Chua]]. Here is her awesome config https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org.
 ** personal information
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (setq user-full-name "Torsten Senf"
-   	user-mail-address "sentor@sentor.de"
-   	user-login-name "sentor")
-
+	user-mail-address "sentor@sentor.de"
+	user-login-name "sentor")
    #+END_SRC
 
 ** emacs initialization
 *** packages
 
-    
-    #+BEGIN_SRC emacs-lisp
-    (require 'package) 
+
+    #+BEGIN_SRC emacs-lisp :results silent
+    (require 'package)
     ;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
     (package-initialize)
     #+END_SRC
 
-    Use =M-x package-refresh-contents= to reload the list of packages after adding these for the first time. Use the variable =package-activated-list= =C-h v package-activated-list= to see all installed packages at the moment. 
-    #+BEGIN_EXAMPLE
-      package-activated-list is a variable defined in ‘package.el’.
-      Its value is
-      (ace-window avy bbdb browse-kill-ring color-theme-solarized color-theme dired+ helm-descbinds helm-mu helm-swoop helm helm-core htmlize irfc key-chord magit git-commit magit-popup moe-theme multiple-cursors paradox hydra pdf-tools rainbow-delimiters smart-mode-line rich-minority solarized-theme spinner tablist twittering-mode undo-tree which-key with-editor dash async zenburn-theme)
+    Use =M-x package-refresh-contents= to reload the list of packages after adding these for the first time. Use the variable =package-activated-list= =C-h v package-activated-list= to see all installed packages at the moment.
 
-    #+END_EXAMPLE
+*** variables
+    go environments
+    #+BEGIN_SRC emacs-lisp :results silent
+    (setenv "GOROOT" "/home/sentor/download/go")
+    (setenv "GOPATH" "$HOME/gopath")
+    #+END_SRC
 
 ** general configuration
    *Shorten yes/no*
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (fset 'yes-or-no-p 'y-or-n-p)
    #+END_SRC
 
    *No* startup screen
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (setq inhibit-startup-message t)
    #+END_SRC
 
    *No* -bar-modes in the windows system
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (when window-system
        (tooltip-mode -1)
        (tool-bar-mode -1)
@@ -48,52 +48,58 @@
    #+END_SRC
 
    *Enable word-wrap*
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (global-visual-line-mode 1)
    #+END_SRC
 
    *Show columns in modline*
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (column-number-mode t)
    #+END_SRC
 
-   *Auto revert all buffers* 
-   #+BEGIN_SRC emacs-lisp
+   *Auto revert all buffers*
+   #+BEGIN_SRC emacs-lisp :results silent
    (setq global-auto-revert-mode t)
    #+END_SRC
-   
-   *my way to window moving:  using meta + cursor keys*
-   #+BEGIN_SRC emacs-lisp
+
+   *my way to window moving: using meta + cursor keys*
+   #+BEGIN_SRC emacs-lisp :results silent
    (require 'windmove)
    ; super key is the window key
    (windmove-default-keybindings 'super)
    #+END_SRC
 
    *show more name in status bar if buffers are equal* ships with emacs
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (require 'uniquify)
      (setq uniquify-buffer-name-style 'forward)
+   #+END_SRC
+
+   *adding path*
+   #+BEGIN_SRC emacs-lisp :results silent
+   (add-to-list 'load-path "~/.emacs.d/lisp")
    #+END_SRC
 
 ** color theme and colors
    i prefer moe-theme at the moment which comes from melpa
    zenburn or solarized-dark are also nice and used for a long time
    source: https://github.com/bbatsov/zenburn-emacs
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      ;; (require 'moe-theme)
      ;; (load-theme 'moe-dark t)
      (load-theme 'sanityinc-tomorrow-night t)
    #+END_SRC
 
+
    some custom faces
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (when window-system
        (custom-set-faces
-        '(helm-selection ((t (:background "ForestGreen" :foreground "black"))))))
+	'(helm-selection ((t (:background "ForestGreen" :foreground "black"))))))
       #+END_SRC
 
 ** backups
-  #+begin_src emacs-lisp
+  #+begin_src emacs-lisp :results silent
     (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
     (setq delete-old-versions -1)
     (setq version-control t)
@@ -105,37 +111,53 @@
    Show the verbose listing in dired mode by default
    don't use nil :)
    I wan't the less verbose output to jump quicker ....
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      ;;(setq diredp-hide-details-initially-flag nil)
    #+END_SRC
-   
-   *Auto revert dired* 
+
+   *Auto revert dired*
    doesn't work in any case http://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Reverting-Dired.html#Auto-Reverting-Dired
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (setq dired-auto-revert-buffer t)
    #+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (require 'dired+)
 
      ;; ;; sorting directories first
      ;; ;; C-u s let you change the switches on minibuffer
-     (setq dired-listing-switches "-aBhl  --group-directories-first")
+     ;; --group-directories-first only on GNU linux
+     (setq dired-listing-switches "-aBhl")
+
+     ;; other way to sort in dired
+     ;; https://www.emacswiki.org/emacs/DiredSortDirectoriesFirst
+     (defun mydired-sort ()
+       "Sort dired listings with directories first."
+       (save-excursion
+	 (let (buffer-read-only)
+	(forward-line 2) ;; beyond dir. header
+	(sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+	 (set-buffer-modified-p nil)))
+
+     (defadvice dired-readin
+	 (after dired-after-updating-hook first () activate)
+       "Sort dired listings with directories first before adding marks."
+       (mydired-sort))
 
      ;; ;; run shell programs on ! in dired mode
      (require 'dired-x)
      ;; ;; open csr with openssl ...
      (setq dired-guess-shell-alist-user
-         '(("\\.csr\\'" "openssl req -text -in")
-              ("\\.pem\\'" "openssl x509 -text -fingerprint -in")
-              ("\\.crt\\'" "openssl x509 -text -fingerprint -in")
-   	   ("\\.mp4\\'" "vlc &")))
+	'(("\\.csr\\'" "openssl req -text -in")
+	  ("\\.pem\\'" "openssl x509 -text -fingerprint -in")
+	  ("\\.crt\\'" "openssl x509 -text -fingerprint -in")
+	  ("\\.mp4\\'" "vlc &")))
 
    #+END_SRC
 
 ** Which Key a successor of Guide Key
    http://ericjmritz.name/2015/09/15/recent-emacs-packages-as-of-september-2015/
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (require 'which-key)
      (which-key-mode)
      ;; show the keys on the right side like guide keys
@@ -149,44 +171,44 @@
    https://github.com/abo-abo/hydra
    my first hydra adjust window size bound to a key-chord
    press `ws' simultaneous
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (key-chord-define-global
       "ws"
       (defhydra hydra-window-size ()
-        "change window-size"
-        ("h" enlarge-window-horizontally "enlarge horizontal ꜛ")
-        ;; left beside h is g which makes smaller
-        ("g" shrink-window-horizontally "shrink horizontal ꜜ")
-        ("v" enlarge-window "enlarge vertical ")
-        ;; left beside v is c which makes smalles
-        ("c" shrink-window "shrink vertical ")))
-        ;;(key-chord-define-global "ww" 'hydra-window-size/body)
+	"change window-size"
+	("h" enlarge-window-horizontally "enlarge horizontal ꜛ")
+	;; left beside h is g which makes smaller
+	("g" shrink-window-horizontally "shrink horizontal ꜜ")
+	("v" enlarge-window "enlarge vertical ")
+	;; left beside v is c which makes smalles
+	("c" shrink-window "shrink vertical ")))
+	;;(key-chord-define-global "ww" 'hydra-window-size/body)
    #+END_SRC
 
    jump / search into buffers with my favorite functions
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (key-chord-define-global
       "jj"
       (defhydra hydra-jump-into-buffer (:color blue)
-        "jump-arround"
-        ("c" avy-goto-char "goto-char")
+	"jump-arround"
+	("c" avy-goto-char "goto-char")
 	("b" avy-goto-word-1 "goto-word-1")
-        ("w" ace-window "jump to window")
-        ("s" helm-swoop "helm-swoop")
+	("w" ace-window "jump to window")
+	("s" helm-swoop "helm-swoop")
 	("r" helm-org-rifle "helm-org-rifle")
-        ("l" avy-goto-line "goto-line")))
+	("l" avy-goto-line "goto-line")))
    #+END_SRC
 
    problem's mc/edit-lines with helm-M-x
    https://github.com/magnars/multiple-cursors.el/issues/151
    so find a propper key or a hydra yeah
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (key-chord-define-global
       "mc"
       (defhydra hydra-multiple-cursors (:hint nil)
-        "
-            ^Up^            ^Down^        ^Other^
+	"
+	    ^Up^            ^Down^        ^Other^
        ----------------------------------------------
        [_p_]   Next    [_n_]   Next    [_l_] Edit lines
        [_P_]   Skip    [_N_]   Skip    [_b_] Edit beginning of lines
@@ -195,22 +217,22 @@
        ^ ^             ^ ^             [_r_] Mark by regexp
        ^ ^             ^ ^	       [_q_] Quit
        "
-        ("l" mc/edit-lines)
+	("l" mc/edit-lines)
 	("b" mc/edit-beginnings-of-lines)
 	("e" mc/edit-ends-of-lines)
-        ("a" mc/mark-all-like-this)
-        ("n" mc/mark-next-like-this)
-        ("N" mc/skip-to-next-like-this)
-        ("M-n" mc/unmark-next-like-this)
-        ("p" mc/mark-previous-like-this)
-        ("P" mc/skip-to-previous-like-this)
-        ("M-p" mc/unmark-previous-like-this)
-        ("r" mc/mark-all-in-region-regexp)
-        ("q" nil)))
+	("a" mc/mark-all-like-this)
+	("n" mc/mark-next-like-this)
+	("N" mc/skip-to-next-like-this)
+	("M-n" mc/unmark-next-like-this)
+	("p" mc/mark-previous-like-this)
+	("P" mc/skip-to-previous-like-this)
+	("M-p" mc/unmark-previous-like-this)
+	("r" mc/mark-all-in-region-regexp)
+	("q" nil)))
    #+END_SRC
 
    do mail functions via my emacs mailer mu4e
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results silent
   (key-chord-define-global
    "dm"
    (defhydra hydra-do-mail (:color blue)
@@ -223,16 +245,16 @@
 ** fonts  / scaling
 *** special char font
     Show special chars etc. C-x 8 RET => `CRYING CAT FACE' 😿 with a special font.
-    Very cool and seen here => http://irreal.org/blog/?p=2832 ... but doesn't work in current emacs 
-    #+BEGIN_SRC emacs-lisp
+    Very cool and seen here => http://irreal.org/blog/?p=2832 ... but doesn't work in current emacs
+    #+BEGIN_SRC emacs-lisp :results silent
       (set-fontset-font "fontset-default" nil
-    		    ;;(font-spec :size 30 :name "DejaVu Sans Mono"))
-    		    ;;(font-spec :size 30 :name "Symbola"))
+		    ;;(font-spec :size 30 :name "DejaVu Sans Mono"))
+		    ;;(font-spec :size 30 :name "Symbola"))
 		    (font-spec :size 30 :name "Unifont"))
     #+END_SRC
 
 *** scaling
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (global-set-key (kbd "C-+") 'text-scale-increase)
     (global-set-key (kbd "C--") 'text-scale-decrease)
     (global-set-key (kbd "C-0") 'text-scale-adjust)
@@ -240,7 +262,7 @@
 
 ** server
    Use emacs as a server to connect with emacsclient ...
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (server-start)
    #+END_SRC
 
@@ -248,7 +270,7 @@
    Using git from within emacs
 
    Don't highlight the region in magit diff view
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (custom-set-variables
       '(magit-item-highlight-face nil)
       '(magit-diff-use-overlays nil)
@@ -257,14 +279,14 @@
    #+END_SRC
 
    Use 'F5' for git status
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (global-set-key (kbd "<f5>")  'magit-status)
    #+END_SRC
 
 ** undo tree
    Replace emacs undo handling with undo tree. Undo tree is an package from melpa.
 
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (global-undo-tree-mode)
      (setq undo-tree-visualizer-timestamps t)
      (setq undo-tree-visualizer-diff t)
@@ -272,35 +294,18 @@
 
 ** smart mode line
    Find by Sacha
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      ;; no confirmation is needed for theme which load lisp
      (setq sml/no-confirm-load-theme t)
      (sml/setup)
      (sml/apply-theme 'dark)
    #+END_SRC
 
-** my functions
-   insert date / time string
-   #+BEGIN_SRC emacs-lisp :results silent
-     (defun sentor/insert-date ()
-       (interactive)
-       (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
-   #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp :results silent
-     (defun sentor/copy-to-publishing-base-dir-and-publish ()
-     (interactive)
-     (setq my_pub_project "myweb")
-     (setq my_target (plist-get (cdr (assoc my_pub_project org-publish-project-alist)) ':base-directory))
-     (copy-file buffer-file-name my_target 1)
-     (org-publish-project my_pub_project))
-   #+END_SRC
-
 ** twitter
    using twittering-mode
    first of all get pin via oauth use `twit'
    https://github.com/hayamiz/twittering-mode
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (setq twittering-icon-mode t)
    ;; keep icons in a local storage
    ;; ~/.twittering-mode-icons.gz, which can be changed by the variable twittering-icon-storage-file.
@@ -316,14 +321,14 @@
    (setq twittering-timer-interval 120)
    ;; should visible / show tweet to reply use "r"
    (setq twittering-use-master-password t)
-   ;; resize images default 48px which is to nmuch 
+   ;; resize images default 48px which is to nmuch
    (setq twittering-convert-fix-size 24)
    #+END_SRC
 
 ** key-chord
    to work, press different two characters simultaneous or the same twice
    key-chords are used in hydra
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (setq key-chord-one-key-delay 0.2)
    (key-chord-mode 1)
    #+END_SRC
@@ -334,24 +339,24 @@
 
 ** rainbow delimiters
    Enable rainbox delimiters
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (require 'rainbow-delimiters)
    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
    #+END_SRC
 
 ** multiple cursors
-   used in hydra's see there 
+   used in hydra's see there
 
 ** org-mode
 *** Basics
     hide emphasis-markers e.g. see /foo bar/ as italic
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (setq org-hide-emphasis-markers t)
     #+END_SRC
 
 *** Shortcuts
     Some often use shortcuts
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp :results silent
        (global-set-key "\C-cl" 'org-store-link)
        (global-set-key "\C-ca" 'org-agenda)
        (global-set-key "\C-cb" 'org-iswitchb)
@@ -359,7 +364,7 @@
 
 *** Exportes
 
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
       ;; use also exporter in the contrib directory
       (add-to-list 'load-path "/home/sentor/download/org-mode/contrib/lisp")
       (require 'ox-html)
@@ -372,159 +377,158 @@
 
     Use the awesome *scrartl class*. I like this class more than the standard article class.
     use this latex class with: =#+LaTeX_CLASS: koma-article=
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
       (add-to-list 'org-latex-classes
-    	       '("koma-article"
-    		 "\\documentclass{scrartcl}"
-    		 ("\\section{%s}" . "\\section*{%s}")
-    		 ("\\subsection{%s}" . "\\subsection*{%s}")
-    		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-    		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-    		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+	       '("koma-article"
+		 "\\documentclass{scrartcl}"
+		 ("\\section{%s}" . "\\section*{%s}")
+		 ("\\subsection{%s}" . "\\subsection*{%s}")
+		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     #+END_SRC
 
-    Test =xelatex= as latex compiler. 
-    Install package =texlive-xetex= on debian. 
-    #+BEGIN_SRC emacs-lisp
+    Test =xelatex= as latex compiler.
+    Install package =texlive-xetex= on debian.
+    #+BEGIN_SRC emacs-lisp :results silent
       (setq org-latex-compiler "xelatex")
     #+END_SRC
 
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
       (setq org-latex-packages-alist
-        ;; xltxtra will load fontspec + xunicode e.g. for german umlauts 
-        '(("" "xltxtra" t)))
+	;; xltxtra will load fontspec + xunicode e.g. for german umlauts
+	'(("" "xltxtra" t)))
     #+END_SRC
 
 *** Babel Code Block Stuff
 
     don't ask for code evaluation
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (setq org-confirm-babel-evaluate nil)
     #+END_SRC
 
     Colorize the code in the src code blocks
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (setq org-src-fontify-natively t)
     #+END_SRC
 
     execute code blocks into org-mode and get the result into the buffer pretty cool
     http://emacs-fu.blogspot.de/2011/02/executable-source-code-blocks-with-org.html
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
       (org-babel-do-load-languages
        'org-babel-load-languages
        '( (perl . t)
-          (ruby . t)
-          (sh . t)
-          (python . t)
-          (emacs-lisp . t)
-          (ditaa . t)
-          ))
+	  (ruby . t)
+	  (sh . t)
+	  (python . t)
+	  (emacs-lisp . t)
+	  (ditaa . t)
+	  ))
     #+END_SRC
 
     colorize ascii art with ditaa
     http://ditaa.sourceforge.net/
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (setq org-ditaa-jar-path "~/.emacs.d/DitaaEps/DitaaEps.jar")
     #+END_SRC
 
     make some special modes in picture / artist mode to better edit ascii art graphics
     the ruler-mode will be overwrite with other stuff; acticvate that later
 
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (setq picture-mode-hook (quote (linum-mode hl-line-mode ruler-mode)))
     #+END_SRC
 
 *** Folded content
     sign which indicates that content is under the heading or in code blocks
     http://endlessparentheses.com/changing-the-org-mode-ellipsis.html
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (setq org-ellipsis "⤵")
     #+END_SRC
 
 *** Bullets in front of headings
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (require 'org-bullets)
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
     #+END_SRC
 
 *** Capture
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
       (define-key global-map "\C-cc" 'org-capture)
       (setq org-capture-templates
-    	'(
-              ("t" "Todo" entry (file+headline "~/documents/own/private_gtd.org" "Tasks")
-               "** TODO %? date: %U\n %i\n")))
+	'(
+	      ("t" "Todo" entry (file+headline "~/documents/own/private_gtd.org" "Tasks")
+	       "** TODO %? date: %U\n %i\n")))
     #+END_SRC
 
-*** Publishing 
-    publish my own org-files 
+*** Publishing
+    publish my own org-files
 
-    export html as html5 
-    #+BEGIN_SRC emacs-lisp
+    export html as html5
+    #+BEGIN_SRC emacs-lisp :results silent
      (setq org-html-doctype "html5")
     #+END_SRC
 
-    #+BEGIN_SRC emacs-lisp
-      (setq org-export-html-postamble-format 
-    	'(("en" "<p class=\"postamble\">Last Updated %d %C. Created by %c</p>")))
+    #+BEGIN_SRC emacs-lisp :results silent
+      (setq org-export-html-postamble-format
+	'(("en" "<p class=\"postamble\">Last Updated %d %C. Created by %c</p>")))
 
       (setq org-publish-project-alist
-    	'(("myweb"
-    	   :base-directory "/home/sentor/documents/own/blog/export/base/"
-    	   :base-extension "org"
-    	   :publishing-directory "/home/sentor/documents/own/blog/export/html/pages/"
-    	   :publishing-function org-html-publish-to-html
-    	   :exclude "foo.org"   ;; regexp
-    	   :headline-levels 3
-    	   :section-numbers nil
-    	   :with-toc nil
-    	   :html-head "<link rel=\"stylesheet\"
-                           href=\"../other/org.css\" type=\"text/css\"/>"
-    	   :html-preamble "
-         <div id=\"menu\">
-    	<p>
-    	<a href=\"../../index.html\" >Home</a> |
-    	<a href=\"page2.html\" >Page 2</a> |
-    	<a href=\"page3.html\" >Page 3</a> |
-    	<a href=\"page4.html\" >Page 4</a>
-    	</p>
-           </div>
-        "
+	'(("myweb"
+	   :base-directory "/home/sentor/documents/own/blog/export/base/"
+	   :base-extension "org"
+	   :publishing-directory "/home/sentor/documents/own/blog/export/html/pages/"
+	   :publishing-function org-html-publish-to-html
+	   :exclude "foo.org"   ;; regexp
+	   :headline-levels 3
+	   :section-numbers nil
+	   :auto-sitemap t
+	   :with-toc nil
+	   :html-head "<link rel=\"stylesheet\"
+			   href=\"../other/org.css\" type=\"text/css\"/>"
+	   :html-preamble "
+	 <div id=\"menu\">
+	<p>
+	<a href=\"../../index.html\" >Home</a> |
+	<a href=\"page2.html\" >Page 2</a> |
+	<a href=\"page3.html\" >Page 3</a> |
+	<a href=\"page4.html\" >Page 4</a>
+	</p>
+	   </div>
+	"
 
-    	   )
+	   )
 
-    	  ("images"
-    	   :base-directory "/home/sentor/documents/own/blog/export/images/"
-    	   :base-extension "jpg\\|gif\\|png"
-    	   :publishing-directory "/home/sentor/documents/own/blog/export/html/images/"
-    	   :publishing-function org-publish-attachment)
+	  ("images"
+	   :base-directory "/home/sentor/documents/own/blog/export/images/"
+	   :base-extension "jpg\\|gif\\|png"
+	   :publishing-directory "/home/sentor/documents/own/blog/export/html/images/"
+	   :publishing-function org-publish-attachment)
 
-    	  ("other"
-    	   :base-directory "/home/sentor/documents/own/blog/export/other/"
-    	   :base-extension "css\\|el"
-    	   :publishing-directory "//home/sentor/documents/own/blog/export/html/other/"
-    	   :publishing-function org-publish-attachment)
-    	  ("website" :components ("orgfiles" "images" "other"))))
+	  ("other"
+	   :base-directory "/home/sentor/documents/own/blog/export/other/"
+	   :base-extension "css\\|el"
+	   :publishing-directory "//home/sentor/documents/own/blog/export/html/other/"
+	   :publishing-function org-publish-attachment)
+	  ("website" :components ("orgfiles" "images" "other"))))
     #+END_SRC
-
-    #+RESULTS:
-    | myweb | :base-directory | /home/sentor/documents/own/blog/export/base/ | :base-extension | org | :publishing-directory | /home/sentor/documents/own/blog/export/html/pages/ | :publishing-function | org-html-publish-to-html | :exclude | foo.org | :headline-levels | 3 | :section-numbers | nil | :with-toc | nil | :html-head | <link rel="stylesheet" |
 
 *** Agenda
     needed for creating ics files with hours e.g. <2016-03-19 Sa 14:00>--<2016-03-19 Sa 23:00>
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp :results silent
     (setq org-agenda-default-appointment-duration 60)
+
     #+END_SRC
 
 ** browser settings
    set the default browser
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (setq browse-url-browser-function 'browse-url-generic
-   	browse-url-generic-program "google-chrome")
+	browse-url-generic-program "google-chrome")
    #+END_SRC
 
 ** aspell
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (setq ispell-program-name "/usr/bin/aspell")
    (setq ispell-list-command "list")
    (setq-default ispell-extra-args '("--encoding=UTF-8"))
@@ -532,29 +536,29 @@
 
 ** calendar
    Start the week with monday
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (setq calendar-week-start-day 1)
    #+END_SRC
 
 ** mu4e - my mailer inside emacs
-   use a separate file for my mu4e mail config 
+   use a separate file for my mu4e mail config
    defined in =init.el=
    #+INCLUDE: "~/.emacs.d/mu4e_config.org"
-** rfc mode 
+** rfc mode
    *reading rfc*
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (require 'irfc)
    (setq irfc-assoc-mode t)
    #+END_SRC
 
-** kill ring 
-   #+BEGIN_SRC emacs-lisp
+** kill ring
+   #+BEGIN_SRC emacs-lisp :results silent
   (require 'browse-kill-ring)
   (global-set-key "\C-cy" 'browse-kill-ring)
    #+END_SRC
 
-** helm 
-   #+BEGIN_SRC emacs-lisp
+** helm
+   #+BEGIN_SRC emacs-lisp :results silent
      ;; https://tuhdo.github.io/helm-intro.html
      (require 'helm)
 
@@ -590,17 +594,17 @@
       helm-split-window-default-side 'other ;; open helm buffer in another window
       helm-split-window-in-side-p t ;; open helm buffer inside current window, not occupy whole other window
       helm-buffers-favorite-modes (append helm-buffers-favorite-modes
-       				       '(picture-mode artist-mode))
+				       '(picture-mode artist-mode))
       helm-candidate-number-limit 200 ; limit the number of displayed canidates
       helm-M-x-requires-pattern 0     ; show all candidates when set to 0
       helm-boring-file-regexp-list
       '("\\.git$" "\\.hg$" "\\.svn$" "\\.CVS$" "\\._darcs$" "\\.la$" "\\.o$" "\\.i$") ; do not show these files in helm buffer
       helm-ff-file-name-history-use-recentf t
       helm-move-to-line-cycle-in-source t ; move to end or beginning of source
-                                             ; when reaching top or bottom of source.
+					     ; when reaching top or bottom of source.
       ido-use-virtual-buffers t      ; Needed in helm-buffers-list
       helm-buffers-fuzzy-matching t          ; fuzzy matching buffer names when non--nil
-                                             ; useful in helm-mini that lists buffers
+					     ; useful in helm-mini that lists buffers
       )
 
 
@@ -622,25 +626,170 @@
 
 ** weather with wttr.in
    found here http://pragmaticemacs.com/emacs/weather-in-emacs/
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
    (require 'wttrin)
    (setq wttrin-default-cities '("Kahla""Greuda""Jena"))
    #+END_SRC
 
-
 ** music / mpg123
    Play mp3 in emacs with an interface to mpg123 ... why not ;)
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp :results silent
      (require 'mpg123)
    #+END_SRC
 
-
-** bbdb 
-   get it from source and use it e.g. in mu4e 
+** bbdb
+   Interessting link:
+   - http://doc.rix.si/cce/cce-home.html
+   get it from source and use it e.g. in mu4e
    https://www.emacswiki.org/emacs/UpgradeBBDB
-   #+BEGIN_SRC emacs-lisp :results silent 
-   (setq bbdb-offer-save 1) ;; 1 means save-without-asking
-   (setq bbdb-complete-mail-allow-cycling t)  ;; cycle through multiple mail addresses 
-   (setq bbdb-pop-up-window-size 10)  
+   #+BEGIN_SRC emacs-lisp :results silent
+     (require 'bbdb-com)
+     (setq bbdb-offer-save 1) ;; 1 means save-without-asking
+     (setq bbdb-complete-mail-allow-cycling t)  ;; cycle through multiple mail addresses
+     (setq bbdb-pop-up-window-size 5)
+     (setq bbdb-horiz-pop-up-window-size (quote (66 . 10))) ;; doesn't work as expected
+     (setq bbdb-image-path "/home/sentor/.emacs.d/bbdb_images/")
+   #+END_SRC
+
+** handling parentheses
+   *enable paren mode*
+   #+BEGIN_SRC emacs-lisp :results silent
+     (show-paren-mode 1)
+     (setq show-paren-delay 0)
+   #+END_SRC
+
+   *use smartparens*
+   https://github.com/Fuco1/smartparens
+   #+BEGIN_SRC emacs-lisp :results silent
+     (require 'smartparens-config)
+   #+END_SRC
+
+** tempbuf
+   *deletes inactive buffers in the background*
+   #+BEGIN_SRC emacs-lisp :results silent
+   (require 'tempbuf)
+   ;; delete inactive bbdb buffers in the background
+   (add-hook 'bbdb-mode-hook 'turn-on-tempbuf-mode)
+   #+END_SRC
+
+** elfeed - feed reader
+    elfeed-org
+    http://pragmaticemacs.com/emacs/read-your-rss-feeds-in-emacs-with-elfeed/
+    https://github.com/remyhonig/elfeed-org
+    #+BEGIN_SRC emacs-lisp :results silent
+    (require 'elfeed-org)
+    (require 'elfeed)
+    (setq rmh-elfeed-org-files (list "/home/sentor/documents/own/elfeed.org"))
+
+    (setq elfeed-search-title-max-width 90)
+    #+END_SRC
+
+
+   ELfeed colors test
+   #+BEGIN_SRC emacs-lisp :results silent
+     (custom-set-faces
+      '(elfeed-search-date-face
+	((t :foreground "#aaa"
+	    :weight bold)))
+      '(elfeed-search-title-face
+	((t :foreground "#696" )))
+      '(elfeed-search-tag-face
+	((t :foreground "#0ff")))
+      '(elfeed-search-unread-title-face
+	((t :foreground "#8b0"
+	    :weight bold ))))
+   #+END_SRC
+
+   Star / Unstar articles
+   http://pragmaticemacs.com/emacs/star-and-unstar-articles-in-elfeed/
+   awesome but refacture to my needs
+
+   #+BEGIN_SRC emacs-lisp :results silent
+     ;; code to add and remove a starred tag to elfeed article
+     ;; based on http://matt.hackinghistory.ca/2015/11/22/elfeed/
+
+     ;; add a star
+     (defun bjm/elfeed-star ()
+       "Apply starred to all selected entries."
+       (interactive )
+       (let* ((entries (elfeed-search-selected))
+	      (tag (intern "starred")))
+
+	 (cl-loop for entry in entries do (elfeed-tag entry tag))
+	 (mapc #'elfeed-search-update-entry entries)
+	 (unless (use-region-p) (forward-line))))
+
+     ;; remove a start
+     (defun bjm/elfeed-unstar ()
+       "Remove starred tag from all selected entries."
+       (interactive )
+       (let* ((entries (elfeed-search-selected))
+	      (tag (intern "starred")))
+
+	 (cl-loop for entry in entries do (elfeed-untag entry tag))
+	 (mapc #'elfeed-search-update-entry entries)
+	 (unless (use-region-p) (forward-line))))
+
+     ;; face for starred articles
+     (defface elfeed-search-starred-title-face
+       '((t :foreground "#f77"))
+       "Marks a starred Elfeed entry.")
+
+     (push '(starred elfeed-search-starred-title-face) elfeed-search-face-alist)
+
+     ;; add keybindings
+     (eval-after-load 'elfeed-search
+       '(define-key elfeed-search-mode-map (kbd "+") 'bjm/elfeed-star))
+     (eval-after-load 'elfeed-search
+       '(define-key elfeed-search-mode-map (kbd "-") 'bjm/elfeed-unstar))
+
+     ;;shortcut to jump to starred bookmark
+     (defun bjm/elfeed-show-starred ()
+       (interactive)
+       (bookmark-jump "elfeed-starred"))
+     (define-key elfeed-search-mode-map (kbd "S") 'bjm/elfeed-show-starred)
+
+   #+END_SRC
+
+** tramp
+   Using sudo inside tramp
+   Use:
+   C-x C-f /sudo:remote-host:/file//
+   #+BEGIN_SRC emacs-lisp :results silent
+     ;; (add-to-list 'tramp-default-proxies-alist
+     ;;		     '((regexp-quote (system-name)) nil nil))
+
+     (add-to-list 'tramp-default-proxies-alist
+	       '(nil "\\`root\\'" "/ssh:%h:"))
+   #+END_SRC
+
+** keychain
+   Load my keychain (https://wiki.archlinux.org/index.php/SSH_keys#Keychain) environments to easy connect via ssh key
+
+   #+BEGIN_SRC emacs-lisp :results silent
+   (require 'keychain-environment)
+   (keychain-refresh-environment)
+   #+END_SRC
+
+** my functions
+   magnar's string library for daily usage https://github.com/magnars/s.el/blob/master/s.el
+   #+BEGIN_SRC emacs-lisp :results silent
+   (require 's)
+   #+END_SRC
+   (require 's)
+   insert date / time string
+   #+BEGIN_SRC emacs-lisp :results silent
+     (defun sentor/insert-date ()
+       (interactive)
+       (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
+   #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+     (defun sentor/copy-to-publishing-base-dir-and-publish ()
+       (interactive)
+       (setq my_pub_project "myweb")
+       (setq my_target (plist-get (cdr (assoc my_pub_project org-publish-project-alist)) ':base-directory))
+       (copy-file buffer-file-name my_target 1)
+       (org-publish-project my_pub_project))
    #+END_SRC
 
