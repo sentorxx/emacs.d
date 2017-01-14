@@ -154,6 +154,16 @@
 	  ("\\.mp4\\'" "vlc &")))
 
    #+END_SRC
+   Dired tries to guess a default target directory.
+   This means: if there is a Dired buffer displayed in the next
+   window, use its current directory, instead of this Dired buffer’s
+   current directory
+
+   2 dired buffers (easy copy move ...)
+   #+BEGIN_SRC emacs-lisp :results silent
+   (setq dired-dwim-target t)
+   
+   #+END_SRC
 
 ** Which Key a successor of Guide Key
    http://ericjmritz.name/2015/09/15/recent-emacs-packages-as-of-september-2015/
@@ -302,6 +312,7 @@
    #+END_SRC
 
 ** twitter
+   see hydra https://github.com/abo-abo/hydra/wiki/Twittering
    using twittering-mode
    first of all get pin via oauth use `twit'
    https://github.com/hayamiz/twittering-mode
@@ -313,7 +324,7 @@
    ;; number of tweets
    (setq twittering-number-of-tweets-on-retrieval 100)
    (setq twittering-status-format
-   "%FOLD{%RT{%FACE[bold]{RT}}%i%S%FACE[italic]{ %r @%C{%Y-%m-%d %H:%M:%S} %@{} via: %f\n}%FOLD[ ]{%T%RT{\nretweeted by %i %S (%FIELD-IF-NONZERO{retweet_count} retweets) }}}\n")
+   "%FOLD{%RT{%FACE[bold]{RT}} %i %FACE[bold]{%S} %FACE[shadow]{%r @%C{%Y-%m-%d %H:%M:%S} via: %f\n}%FOLD[ ]{%T%RT{\nretweeted by %i %S (%FIELD-IF-NONZERO{retweet_count} retweets)  } (%FIELD-IF-NONZERO{favorite_count} favorites) }}\n")
    ;; found here
    ;; http://doc.rix.si/org/fsem.html#sec-12
    (add-hook 'twittering-edit-mode-hook 'turn-on-flyspell)
@@ -322,7 +333,7 @@
    ;; should visible / show tweet to reply use "r"
    (setq twittering-use-master-password t)
    ;; resize images default 48px which is to nmuch
-   (setq twittering-convert-fix-size 24)
+   (setq twittering-convert-fix-size 40)
    #+END_SRC
 
 ** key-chord
@@ -423,6 +434,7 @@
 	  (python . t)
 	  (emacs-lisp . t)
 	  (ditaa . t)
+	  (gnuplot . t )
 	  ))
     #+END_SRC
 
@@ -518,6 +530,59 @@
     #+BEGIN_SRC emacs-lisp :results silent
     (setq org-agenda-default-appointment-duration 60)
 
+    #+END_SRC
+
+*** breadcumb ... see where you are in org tree
+    https://gist.github.com/theodorewiles/cce2c170f8d4dfc60f06073cb73dfe10
+    #+BEGIN_SRC emacs-lisp
+      (require 'cl)
+
+      (defun org-get-header-list (&optional buffer) 
+        "Get the headers of an org buffer as a flat list of headers and levels.
+      Buffer will default to the current buffer.
+      Thanks to http://emacs.stackexchange.com/questions/17622/how-can-i-walk-an-org-mode-tree
+      for this function!
+      "
+        (with-current-buffer (or buffer (current-buffer))
+          (let ((tree (org-element-parse-buffer 'headline)))
+    	(org-element-map 
+                tree 
+                'headline
+              (lambda (el) (list
+    			(org-element-property :raw-value el) ; get the header text
+    			(org-element-property :begin el) ; get where the header starts
+    			(org-element-property :end el) ; get where the header ends
+    			(org-element-property :level el) ; get depth
+                       ;; >> could add other properties here
+                       ))))))
+
+      (defun tw/test-if-between (p e)
+        "Test if p lies between the second and third elements of e"
+        (and (>= p (second e))
+    	 (<= p (nth 2 e))))
+
+      ;; (defun tw/org-where ()
+      (defun tw/breadcrumb ()
+        "Display where you are in your org tree"
+        (interactive)
+        (message
+         (mapconcat 'first
+    		(remove-if-not (lambda (x) (tw/test-if-between (point) x))
+                                   (org-get-header-list))
+    		" > ")))
+
+      ;; 
+      ;; Map this to C-c SPC.
+      ;;
+      (defun my-org-hook ()
+        (define-key org-mode-map (kbd "C-c SPC") 'tw/breadcrumb)
+        )
+      (add-hook 'org-mode-hook 'my-org-hook)
+
+      ;; Pressing C-c SPC in an org mode buffer should give you
+      ;; "Level 1 > Level 2 > Level 5", etc.
+
+    
     #+END_SRC
 
 ** browser settings
@@ -769,6 +834,43 @@
    #+BEGIN_SRC emacs-lisp :results silent
    (require 'keychain-environment)
    (keychain-refresh-environment)
+   #+END_SRC
+
+** erc 
+   hide some IRC message types 
+   #+BEGIN_SRC emacs-lisp :results silent
+   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+   #+END_SRC
+
+** ruby 
+
+** 
+   infos:
+   - https://stackoverflow.com/questions/20729873/recommendation-for-emacs-ruby-setup
+   - http://crypt.codemancers.com/posts/2013-09-26-setting-up-emacs-as-development-environment-on-osx/
+
+   config for ruby lang  
+   enhanced-ruby-mode https://github.com/zenspider/enhanced-ruby-mode
+   #+BEGIN_SRC emacs-lisp :results silent
+     (add-to-list 'auto-mode-alist
+     '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode))
+   #+END_SRC
+
+   robe stuff https://github.com/dgutov/robe
+   requires:
+   - gem install pry, pry-doc, method_source
+   #+BEGIN_SRC emacs-lisp :results silent
+   (add-hook 'enh-ruby-mode-hook 'robe-mode)
+   (add-hook 'enh-ruby-mode-hook 'yard-mode)
+   #+END_SRC
+
+** yaml mode 
+   Using yaml-mode => https://github.com/yoshiki/yaml-mode
+
+   minor mode for editing yaml files 
+   https://github.com/zk-phi/indent-guide
+   #+BEGIN_SRC emacs-lisp :results silent
+   (add-hook 'yaml-mode-hook 'indent-guide-mode)
    #+END_SRC
 
 ** my functions
