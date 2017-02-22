@@ -75,7 +75,7 @@
      (setq uniquify-buffer-name-style 'forward)
    #+END_SRC
 
-   *adding path*
+   *adding path's*
    #+BEGIN_SRC emacs-lisp :results silent
    (add-to-list 'load-path "~/.emacs.d/lisp")
    #+END_SRC
@@ -312,8 +312,10 @@
    #+END_SRC
 
 ** twitter
-   see hydra https://github.com/abo-abo/hydra/wiki/Twittering
    using twittering-mode
+   
+   see hydra https://github.com/abo-abo/hydra/wiki/Twittering
+
    first of all get pin via oauth use `twit'
    https://github.com/hayamiz/twittering-mode
    #+BEGIN_SRC emacs-lisp :results silent
@@ -335,6 +337,12 @@
    ;; resize images default 48px which is to nmuch
    (setq twittering-convert-fix-size 40)
    #+END_SRC
+   
+   set minor mode against typos :)
+   #+BEGIN_SRC emacs-lisp :results silent
+    (add-hook 'twittering-edit-mode-hook (lambda () (flyspell-mode)))
+   #+END_SRC
+
 
 ** key-chord
    to work, press different two characters simultaneous or the same twice
@@ -589,7 +597,7 @@
    set the default browser
    #+BEGIN_SRC emacs-lisp :results silent
      (setq browse-url-browser-function 'browse-url-generic
-	browse-url-generic-program "google-chrome")
+	browse-url-generic-program "firefox")
    #+END_SRC
 
 ** aspell
@@ -843,8 +851,6 @@
    #+END_SRC
 
 ** ruby 
-
-** 
    infos:
    - https://stackoverflow.com/questions/20729873/recommendation-for-emacs-ruby-setup
    - http://crypt.codemancers.com/posts/2013-09-26-setting-up-emacs-as-development-environment-on-osx/
@@ -873,6 +879,15 @@
    (add-hook 'yaml-mode-hook 'indent-guide-mode)
    #+END_SRC
 
+** ESS - Emacs Speaks Statistics
+   Want test some statisticale stuff with R: 
+   Goal: Parse my GPX files from suunto watch 
+   Source comes from here: https://github.com/emacs-ess/ESS
+   #+BEGIN_SRC emacs-lisp :results silent
+      (add-to-list 'load-path "/usr/share/emacs/site-lisp/ess")
+      (require 'ess-site)
+   #+END_SRC
+
 ** my functions
    magnar's string library for daily usage https://github.com/magnars/s.el/blob/master/s.el
    #+BEGIN_SRC emacs-lisp :results silent
@@ -893,5 +908,23 @@
        (setq my_target (plist-get (cdr (assoc my_pub_project org-publish-project-alist)) ':base-directory))
        (copy-file buffer-file-name my_target 1)
        (org-publish-project my_pub_project))
+   #+END_SRC
+     
+   deadline the last work day
+   found in search of a function for a deadline last day of month 
+   just for academic reasons 
+   #+BEGIN_SRC emacs-lisp :results silent
+     (defun sentor/last-working-day-deadline () ;
+         (interactive)
+         (let* ((date (calendar-current-date)) 
+          (day (calendar-extract-day date))
+          (month (calendar-extract-month date))
+          (year (calendar-extract-year date))
+          (lastday (calendar-last-day-of-month month year)))
+        ;; workdays have "names" of 1 2 3 4 or 5
+        (while (not (memq (calendar-day-of-week (list month lastday year)) '(1 2 3 4 5)))
+          (decf lastday))
+        (org-deadline nil (format "%s-%s-%s" year month lastday))))
+
    #+END_SRC
 
