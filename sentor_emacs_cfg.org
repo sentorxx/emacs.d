@@ -24,7 +24,7 @@
     go environments
     #+BEGIN_SRC emacs-lisp :results silent
     (setenv "GOROOT" "/home/sentor/download/go")
-    (setenv "GOPATH" "$HOME/gopath")
+    (setenv "GOPATH" "/home/sentor/gopath")
     #+END_SRC
 
 ** general configuration
@@ -223,7 +223,7 @@
        [_p_]   Next    [_n_]   Next    [_l_] Edit lines
        [_P_]   Skip    [_N_]   Skip    [_b_] Edit beginning of lines
        [_M-p_] Unmark  [_M-n_] Unmark  [_e_] Edit beginning of lines
-       ^ ^             ^ ^             [_a_] Mark all
+       ^ ^             ^ ^             [_a_] Mark allQ
        ^ ^             ^ ^             [_r_] Mark by regexp
        ^ ^             ^ ^	       [_q_] Quit
        "
@@ -242,15 +242,24 @@
    #+END_SRC
 
    do mail functions via my emacs mailer mu4e
-#+BEGIN_SRC emacs-lisp :results silent
+  #+BEGIN_SRC emacs-lisp :results silent
   (key-chord-define-global
    "dm"
    (defhydra hydra-do-mail (:color blue)
-     "make-mail"
+     "do-mail"
      ("c" mu4e-compose-new "compose mail")
      ("j" mu4e~headers-jump-to-maildir "jump mail dir")
      ("s" helm-mu "search mail")))
-#+END_SRC
+  #+END_SRC
+
+  #+BEGIN_SRC emacs-lisp :results silent
+    (key-chord-define-global
+    "bm"
+   (defhydra hydra-book-mark (:color blue)
+     "book-mark"
+     ("a" org-board-archive "archive / save bookmark local")
+     ("o" org-board-open "open bookmark")))
+  #+END_SRC
 
 ** fonts  / scaling
 *** special char font
@@ -343,7 +352,6 @@
     (add-hook 'twittering-edit-mode-hook (lambda () (flyspell-mode)))
    #+END_SRC
 
-
 ** key-chord
    to work, press different two characters simultaneous or the same twice
    key-chords are used in hydra
@@ -420,7 +428,7 @@
     #+END_SRC
 
 *** Babel Code Block Stuff
-
+    
     don't ask for code evaluation
     #+BEGIN_SRC emacs-lisp :results silent
     (setq org-confirm-babel-evaluate nil)
@@ -442,7 +450,7 @@
 	  (python . t)
 	  (emacs-lisp . t)
 	  (ditaa . t)
-	  (gnuplot . t )
+	  (gnuplot . t)
 	  ))
     #+END_SRC
 
@@ -473,14 +481,43 @@
     #+END_SRC
 
 *** Capture
+    want to try org-board https://github.com/scallywag/org-board
+    #+BEGIN_SRC emacs-lisp :results silent
+    (require 'org-protocol)
+    #+END_SRC
+    
     #+BEGIN_SRC emacs-lisp :results silent
       (define-key global-map "\C-cc" 'org-capture)
       (setq org-capture-templates
-	'(
-	      ("t" "Todo" entry (file+headline "~/documents/own/private_gtd.org" "Tasks")
-	       "** TODO %? date: %U\n %i\n")))
+        '(
+          ("t" "Todo" entry (file+headline "~/documents/own/private_gtd.org" "Tasks")
+           "** TODO %? date: %U\n %i\n")
+          ("b" "capture through org protocol" entry (file+headline "~/documents/own/bookmarks.org" "Bookmarks")
+           "* %?%:description\n:PROPERTIES:\n:URL: %:link\n:END:\n\n Added %U")))
+
     #+END_SRC
 
+*** org-board
+    want to try org-board https://github.com/scallywag/org-board
+    #+BEGIN_SRC emacs-lisp :results silent
+    (require 'org-protocol)
+    #+END_SRC
+    the capture definition is here =>  [[*Capture][Capture]] 
+    #+BEGIN_SRC emacs-lisp :results silent
+      (setq org-board-capture-file "~/documents/own/bookmarks.org")
+      
+      (defun do-org-board-dl-hook ()
+        (when (equal (buffer-name)
+    		 (concat "CAPTURE-" org-board-capture-file))
+          (org-board-archive)))
+
+      (add-hook 'org-capture-before-finalize-hook 'do-org-board-dl-hook)
+    #+END_SRC
+    org-board keymap 
+    #+BEGIN_SRC emacs-lisp :results silent
+     (global-set-key (kbd "C-c o") 'org-board-keymap)
+    #+END_SRC
+   
 *** Publishing
     publish my own org-files
 
@@ -888,6 +925,36 @@
       (require 'ess-site)
    #+END_SRC
 
+** Go 
+   https://tleyden.github.io/blog/2014/05/22/configure-emacs-as-a-go-editor-from-scratch/
+   #+BEGIN_SRC emacs-lisp :results silent
+     (defun auto-complete-for-go ()
+       (auto-complete-mode 1))
+     (add-hook 'go-mode-hook 'auto-complete-for-go)
+     (with-eval-after-load 'go-mode
+     (require 'go-autocomplete))
+   #+END_SRC
+
+   Compile go 
+   
+   #+BEGIN_SRC emacs-lisp :results silent
+
+     (defun my-go-mode-hook ()
+       ;; Call Gofmt before saving
+       (add-hook 'before-save-hook 'gofmt-before-save)
+       ;; Customize compile command to run go build
+       (if (not (string-match "go" compile-command))
+   	(set (make-local-variable 'compile-command)
+   	     "go build -v && go test -v && go vet"))
+       ;; Godef jump key binding
+       (local-set-key (kbd "M-.") 'godef-jump)
+       (local-set-key (kbd "M-*") 'pop-tag-mark)
+       )
+     (add-hook 'go-mode-hook 'my-go-mode-hook)
+   #+END_SRC
+   
+   Should comming up next ... Go Guru  https://docs.google.com/document/d/1_Y9xCEMj5S-7rv2ooHpZNH15JgRT5iM742gJkw5LtmQ/edit#
+
 ** my functions
    magnar's string library for daily usage https://github.com/magnars/s.el/blob/master/s.el
    #+BEGIN_SRC emacs-lisp :results silent
@@ -926,5 +993,11 @@
           (decf lastday))
         (org-deadline nil (format "%s-%s-%s" year month lastday))))
 
+   #+END_SRC
+
+   Example ghostscript to get first page of pdf as image 
+   want extract first page from my e-books to see all in a shelf e.g. 
+   #+BEGIN_SRC shell
+   gs -q -o output.png -sDEVICE=pngalpha -dLastPage=1 -dUseCropBox input.pdf 
    #+END_SRC
 
