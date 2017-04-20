@@ -907,6 +907,11 @@
    (add-hook 'enh-ruby-mode-hook 'yard-mode)
    #+END_SRC
 
+   rdoc inside ruby ... use yari https://github.com/hron/yari.el also available on melpa
+   to use rdoc correct do the following steps
+   - sudo gem install rdoc-data
+   - rdoc-data --install
+   - restart emacs ... yari String ... 
 ** yaml mode 
    Using yaml-mode => https://github.com/yoshiki/yaml-mode
 
