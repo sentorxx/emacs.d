@@ -905,6 +905,8 @@
    #+BEGIN_SRC emacs-lisp :results silent
    (add-hook 'enh-ruby-mode-hook 'robe-mode)
    (add-hook 'enh-ruby-mode-hook 'yard-mode)
+   (add-hook 'enh-ruby-mode-hook 'flycheck-mode)
+   
    #+END_SRC
 
    rdoc inside ruby ... use yari https://github.com/hron/yari.el also available on melpa
@@ -912,6 +914,20 @@
    - sudo gem install rdoc-data
    - rdoc-data --install
    - restart emacs ... yari String ... 
+
+     https://github.com/purcell/ac-inf-ruby
+     auto complete in inf-ruby / auto complete in ruby file run `M-x robe-start' ... 
+     first start `inf-ruby'
+     #+BEGIN_SRC emacs-lisp :results silent
+       (eval-after-load 'auto-complete
+         '(add-to-list 'ac-modes 'inf-ruby-mode))
+       (add-hook 'inf-ruby-mode-hook 'ac-inf-ruby-enable)
+
+       (eval-after-load 'inf-ruby '
+         '(define-key inf-ruby-mode-map (kbd "TAB") 'auto-complete))
+
+     #+END_SRC
+	 
 ** yaml mode 
    Using yaml-mode => https://github.com/yoshiki/yaml-mode
 
