@@ -590,21 +590,21 @@
       "
         (with-current-buffer (or buffer (current-buffer))
           (let ((tree (org-element-parse-buffer 'headline)))
-    	(org-element-map 
+        (org-element-map 
                 tree 
                 'headline
               (lambda (el) (list
-    			(org-element-property :raw-value el) ; get the header text
-    			(org-element-property :begin el) ; get where the header starts
-    			(org-element-property :end el) ; get where the header ends
-    			(org-element-property :level el) ; get depth
+        		    (org-element-property :raw-value el) ; get the header text
+        		    (org-element-property :begin el) ; get where the header starts
+        		    (org-element-property :end el) ; get where the header ends
+        		    (org-element-property :level el) ; get depth
                        ;; >> could add other properties here
                        ))))))
 
       (defun tw/test-if-between (p e)
         "Test if p lies between the second and third elements of e"
         (and (>= p (second e))
-    	 (<= p (nth 2 e))))
+         (<= p (nth 2 e))))
 
       ;; (defun tw/org-where ()
       (defun tw/breadcrumb ()
@@ -627,7 +627,30 @@
       ;; Pressing C-c SPC in an org mode buffer should give you
       ;; "Level 1 > Level 2 > Level 5", etc.
 
+    #+END_SRC
+
+*** org-hooks
+    ;; see heading on top of the buffer https://github.com/alphapapa/org-sticky-header
+    #+BEGIN_SRC emacs-lisp :results silent
+    (add-hook 'org-mode-hook 'org-sticky-header-mode)
+    #+END_SRC
     
+*** org tags 
+    ;; Finding all org-mode tags in agenda files and create link 
+    ;; https://c25l.gitlab.io/2017/04/finding-all-org-mode-tags/
+    
+    #+BEGIN_SRC emacs-lisp :results silent
+      (defun sentor/org-tags()
+        (interactive)
+        (get-buffer-create "*org-tags*")
+        (set-buffer "*org-tags*")
+        (org-mode)
+        (let ((tags (sort (delete-dups (apply 'append (delete-dups (org-map-entries (lambda () org-scanner-tags) t 'agenda)))) 'string<)))
+          (dolist (tag tags)
+    	(insert (concat "[[elisp:(org-tags-view nil \"" tag "\")][" tag  "]]\n"))))
+        (beginning-of-buffer)
+        (switch-to-buffer "*org-tags*"))
+
     #+END_SRC
 
 ** browser settings
@@ -655,7 +678,9 @@
    defined in =init.el=
    #+INCLUDE: "~/.emacs.d/mu4e_config.org"
 ** rfc mode
-   *reading rfc*
+   - finding IETF documents ... https://datatracker.ietf.org/
+   - RFC's IPSec strongswan https://wiki.strongswan.org/projects/strongswan/wiki/IpsecStandards
+   *reading rfc* ...
    #+BEGIN_SRC emacs-lisp :results silent
    (require 'irfc)
    (setq irfc-assoc-mode t)
@@ -975,6 +1000,20 @@
    #+END_SRC
    
    Should comming up next ... Go Guru  https://docs.google.com/document/d/1_Y9xCEMj5S-7rv2ooHpZNH15JgRT5iM742gJkw5LtmQ/edit#
+
+** Google Translater 
+   https://github.com/atykhonov/google-translate
+   #+BEGIN_SRC emacs-lisp :results silent
+     (require 'google-translate-smooth-ui)
+     (global-set-key "\C-ct" 'google-translate-smooth-translate)
+     ;; increase translated word 
+     (set-face-attribute 'google-translate-translation-face nil :height 1.2)
+     ;; toggle through translations via C-n
+     (setq google-translate-translation-directions-alist
+	'(("en" . "de") ("de" . "en") ("de" . "fr") ("fr" . "de")))
+     ;; give acustic feedback 
+     (setq google-translate-listen-program "mplayer")
+   #+END_SRC
 
 ** my functions
    magnar's string library for daily usage https://github.com/magnars/s.el/blob/master/s.el
