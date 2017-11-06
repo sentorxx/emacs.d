@@ -376,6 +376,11 @@
 
 ** org-mode
 *** Basics
+    need this since a special org-mode version ... 
+    #+BEGIN_SRC emacs-lisp :results silent
+      (setq org-enable-table-editor t)
+    #+END_SRC
+
     hide emphasis-markers e.g. see /foo bar/ as italic
     #+BEGIN_SRC emacs-lisp :results silent
     (setq org-hide-emphasis-markers t)
@@ -451,6 +456,7 @@
 	  (emacs-lisp . t)
 	  (ditaa . t)
 	  (gnuplot . t)
+	  (dot . t)
 	  ))
     #+END_SRC
 
@@ -630,10 +636,21 @@
     #+END_SRC
 
 *** org-hooks
-    ;; see heading on top of the buffer https://github.com/alphapapa/org-sticky-header
     #+BEGIN_SRC emacs-lisp :results silent
+    ;; see heading on top of the buffer https://github.com/alphapapa/org-sticky-header
     (add-hook 'org-mode-hook 'org-sticky-header-mode)
     #+END_SRC
+    
+    #+BEGIN_SRC emacs-lisp :results silent
+      ;; show org images inline ... nice for graphviz http://joy.pm/post/2017-09-17-a_graphviz_primer/
+
+      (defun my/fix-inline-images ()
+	(when org-inline-image-overlays
+	  (org-redisplay-inline-images)))
+
+      (add-hook 'org-babel-after-execute-hook 'my/fix-inline-images)
+    #+END_SRC
+
     
 *** org tags 
     ;; Finding all org-mode tags in agenda files and create link 
@@ -894,8 +911,8 @@
      ;; (add-to-list 'tramp-default-proxies-alist
      ;;		     '((regexp-quote (system-name)) nil nil))
 
-     (add-to-list 'tramp-default-proxies-alist
-	       '(nil "\\`root\\'" "/ssh:%h:"))
+     ;; (add-to-list 'tramp-default-proxies-alist
+     ;; 	  '(nil "\\`root\\'" "/ssh:%h:"))
    #+END_SRC
 
 ** keychain
@@ -978,11 +995,10 @@
        (auto-complete-mode 1))
      (add-hook 'go-mode-hook 'auto-complete-for-go)
      (with-eval-after-load 'go-mode
-     (require 'go-autocomplete))
+       (require 'go-autocomplete))
    #+END_SRC
 
    Compile go 
-   
    #+BEGIN_SRC emacs-lisp :results silent
 
      (defun my-go-mode-hook ()
