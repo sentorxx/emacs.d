@@ -15,6 +15,7 @@
     (require 'package)
     ;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+    (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
     (package-initialize)
     #+END_SRC
 
@@ -79,6 +80,15 @@
    #+BEGIN_SRC emacs-lisp :results silent
    (add-to-list 'load-path "~/.emacs.d/lisp")
    #+END_SRC
+   
+   *insert timestamp*
+   Timestamp: <>
+   https://www.emacswiki.org/emacs/TimeStamp
+   #+BEGIN_SRC emacs-lisp :results silent
+     (add-hook 'before-save-hook 'time-stamp)
+     (setq time-stamp-pattern nil)
+   #+END_SRC
+
 
 ** color theme and colors
    i prefer moe-theme at the moment which comes from melpa
@@ -204,7 +214,7 @@
 	("c" avy-goto-char "goto-char")
 	("b" avy-goto-word-1 "goto-word-1")
 	("w" ace-window "jump to window")
-	("s" helm-swoop "helm-swoop")
+	("s" swiper-helm "swiper-helm")
 	("r" helm-org-rifle "helm-org-rifle")
 	("l" avy-goto-line "goto-line")))
    #+END_SRC
@@ -257,6 +267,7 @@
     "bm"
    (defhydra hydra-book-mark (:color blue)
      "book-mark"
+     ("n" org-board-new "create new bookmark (url)")
      ("a" org-board-archive "archive / save bookmark local")
      ("o" org-board-open "open bookmark")))
   #+END_SRC
@@ -456,6 +467,7 @@
 	  (emacs-lisp . t)
 	  (ditaa . t)
 	  (gnuplot . t)
+
 	  (dot . t)
 	  ))
     #+END_SRC
