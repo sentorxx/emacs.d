@@ -1,6 +1,5 @@
 ;; load emacs config file as org-mode file 
 (require 'package)
-(package-initialize)
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/org")
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/contrib/lisp")
