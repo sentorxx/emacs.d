@@ -653,7 +653,13 @@
     ;; see heading on top of the buffer https://github.com/alphapapa/org-sticky-header
     (add-hook 'org-mode-hook 'org-sticky-header-mode)
     #+END_SRC
+
+    #+BEGIN_SRC emacs-lisp :results silent
+    ;; sticky org-table headers
+    (add-hook 'org-mode-hook 'org-table-sticky-header-mode)
+    #+END_SRC
     
+
     #+BEGIN_SRC emacs-lisp :results silent
       ;; show org images inline ... nice for graphviz http://joy.pm/post/2017-09-17-a_graphviz_primer/
 
